@@ -12,6 +12,28 @@
 	<link rel="stylesheet" href="styles.css">
 </head>
 <body>
+	<!-- 横屏引导遮罩（仅在移动端竖屏时显示） -->
+	<div id="rotateDevice" class="rotate-device-overlay">
+		<div class="rotate-device-content">
+			<div class="rotate-icon">📱 ➡️ 📱</div>
+			<h2>请旋转设备至横屏</h2>
+			<p>为获得最佳游戏体验，请将设备横向放置</p>
+			<div class="rotate-animation">
+				<svg width="80" height="80" viewBox="0 0 100 100">
+					<rect x="20" y="30" width="60" height="40" rx="5" fill="none" stroke="currentColor" stroke-width="3"/>
+					<circle cx="85" cy="50" r="3" fill="currentColor"/>
+					<path d="M 50 80 Q 50 90, 60 90 L 75 90" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#arrowhead)"/>
+					<defs>
+						<marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+							<polygon points="0 0, 10 3, 0 6" fill="currentColor"/>
+						</marker>
+					</defs>
+				</svg>
+			</div>
+			<button id="rotateHint" class="rotate-hint-btn">我已旋转设备</button>
+		</div>
+	</div>
+
 	<div class="container">
 		<!-- 横屏布局：左侧标题、中间游戏区、右侧统计、底部按钮 -->
 		<div class="landscape-layout">

@@ -1673,20 +1673,36 @@ if (pauseBtnClone) pauseBtnClone.addEventListener('click', pauseGame);
 if (resetBtnClone) resetBtnClone.addEventListener('click', resetGame);
 if (musicBtnClone) musicBtnClone.addEventListener('click', toggleMusic);
 
+// 获取旋转设备遮罩元素
+const rotateDeviceOverlay = document.getElementById('rotateDevice');
+
 // 屏幕方向变化检测和画布调整
 function handleOrientationChange() {
 	const isLandscape = window.innerWidth > window.innerHeight;
 	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+	const isPortrait = !isLandscape;
 	
+	// 移动端竖屏：显示旋转提示遮罩
+	if (isMobile && isPortrait && window.innerWidth <= 768) {
+		if (rotateDeviceOverlay) {
+			rotateDeviceOverlay.style.display = 'flex';
+		}
+	} else {
+		// 其他情况：隐藏遮罩
+		if (rotateDeviceOverlay) {
+			rotateDeviceOverlay.style.display = 'none';
+		}
+	}
+	
+	// 横屏模式：调整画布以充分利用空间
 	if (isMobile && isLandscape) {
-		// 横屏模式：调整画布以充分利用空间
 		const availableHeight = window.innerHeight - 100; // 减去按钮和边距
 		const maxWidth = availableHeight * 1.5; // 保持16:10的宽高比
 		canvas.style.maxHeight = availableHeight + 'px';
 		canvas.style.width = 'auto';
 		canvas.style.height = 'auto';
-	} else {
-		// 其他模式：恢复默认
+	} else if (!isMobile) {
+		// 桌面端：恢复默认
 		canvas.style.maxHeight = '';
 		canvas.style.width = '';
 		canvas.style.height = '';
@@ -1697,18 +1713,74 @@ function handleOrientationChange() {
 window.addEventListener('resize', handleOrientationChange);
 window.addEventListener('orientationchange', handleOrientationChange);
 
-// 初始化时调用一次
-handleOrientationChange();
+// 页面加载完成后立即检查方向
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', handleOrientationChange);
+} else {
+	handleOrientationChange();
+}
 
 // 尝试锁定屏幕方向为横屏（需要用户交互后才能生效）
-if (screen.orientation && screen.orientation.lock) {
-	document.addEventListener('click', function lockOrientation() {
-		screen.orientation.lock('landscape').catch(err => {
-			console.log('无法锁定屏幕方向:', err);
+let orientationLocked = false;
+function attemptLockOrientation() {
+	if (orientationLocked) return;
+	
+	// 检测是否为移动设备
+	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+	if (!isMobile) return;
+	
+	// 尝试锁定横屏
+	if (screen.orientation && screen.orientation.lock) {
+		screen.orientation.lock('landscape').then(() => {
+			console.log('✅ 屏幕已锁定为横屏模式');
+			orientationLocked = true;
+		}).catch(err => {
+			console.log('⚠️ 无法锁定屏幕方向:', err.message);
+			// 某些浏览器需要全屏模式才能锁定方向
+			if (document.documentElement.requestFullscreen) {
+				console.log('💡 提示：进入全屏模式可能有助于锁定屏幕方向');
+			}
 		});
-		// 只尝试一次
-		document.removeEventListener('click', lockOrientation);
-	}, { once: true });
+	}
+}
+
+// 在多个用户交互事件上尝试锁定方向
+['click', 'touchstart', 'touchend'].forEach(eventType => {
+	document.addEventListener(eventType, attemptLockOrientation, { once: true });
+});
+
+// 点击旋转提示遮罩时也尝试锁定
+if (rotateDeviceOverlay) {
+	rotateDeviceOverlay.addEventListener('click', attemptLockOrientation);
+}
+
+// "我已旋转设备"按钮处理
+const rotateHintBtn = document.getElementById('rotateHint');
+if (rotateHintBtn) {
+	rotateHintBtn.addEventListener('click', function(e) {
+		e.stopPropagation();
+		
+		// 尝试进入全屏模式（可以帮助锁定屏幕方向）
+		const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+		if (isMobile && document.documentElement.requestFullscreen) {
+			document.documentElement.requestFullscreen().then(() => {
+				console.log('✅ 已进入全屏模式');
+				// 全屏后再次尝试锁定方向
+				attemptLockOrientation();
+				// 强制刷新方向检测
+				setTimeout(() => {
+					handleOrientationChange();
+				}, 300);
+			}).catch(err => {
+				console.log('⚠️ 无法进入全屏:', err.message);
+				// 即使不能全屏，也检查是否已经横屏
+				handleOrientationChange();
+			});
+		} else {
+			// 非移动设备或不支持全屏，直接检查方向
+			handleOrientationChange();
+		}
+	});
 }
 
 // ========== 导入/清除词库功能 ==========

@@ -2,6 +2,72 @@
 body{font-family:'Microsoft YaHei','SimHei',Arial,sans-serif;background:linear-gradient(135deg,#A1C4FD 0%,#C2E9FB 100%);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 .container{width:100%;max-width:1080px;background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.25);overflow:hidden}
 
+/* 横屏引导遮罩 */
+.rotate-device-overlay{
+	display:none;
+	position:fixed;
+	inset:0;
+	background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+	z-index:99999;
+	justify-content:center;
+	align-items:center;
+	color:#fff;
+	text-align:center;
+	padding:20px;
+}
+.rotate-device-content{
+	max-width:400px;
+}
+.rotate-icon{
+	font-size:48px;
+	margin-bottom:20px;
+	animation:rotate-pulse 2s ease-in-out infinite;
+}
+.rotate-device-content h2{
+	font-size:28px;
+	margin-bottom:12px;
+	font-weight:700;
+}
+.rotate-device-content p{
+	font-size:16px;
+	opacity:0.9;
+	margin-bottom:24px;
+	line-height:1.5;
+}
+.rotate-animation{
+	color:#fff;
+	animation:bounce 1.5s ease-in-out infinite;
+}
+.rotate-hint-btn{
+	margin-top:20px;
+	padding:12px 32px;
+	font-size:16px;
+	font-weight:600;
+	color:#667eea;
+	background:#fff;
+	border:none;
+	border-radius:25px;
+	cursor:pointer;
+	transition:all 0.3s ease;
+	box-shadow:0 4px 15px rgba(0,0,0,0.2);
+}
+.rotate-hint-btn:hover{
+	transform:translateY(-2px);
+	box-shadow:0 6px 20px rgba(0,0,0,0.3);
+	background:#f0f0f0;
+}
+.rotate-hint-btn:active{
+	transform:translateY(0);
+}
+@keyframes rotate-pulse{
+	0%,100%{transform:scale(1);opacity:1}
+	50%{transform:scale(1.1);opacity:0.8}
+}
+@keyframes bounce{
+	0%,100%{transform:translateY(0)}
+	50%{transform:translateY(-10px)}
+}
+
 /* 横屏布局（默认显示） */
 .landscape-layout{display:grid;grid-template-columns:140px 1fr 160px;grid-template-rows:1fr;min-height:600px;gap:0}
 .portrait-layout{display:none}
@@ -148,26 +214,42 @@ body{font-family:'Microsoft YaHei','SimHei',Arial,sans-serif;background:linear-g
 	#wordInput{min-height:150px;font-size:12px}
 }
 
-/* 强制横屏提示（仅在竖屏时显示） */
+/* 移动端竖屏时显示旋转设备遮罩 */
 @media (orientation: portrait) and (max-width: 768px) {
-	body::before{
-		content:'请旋转屏幕至横屏以获得最佳体验 📱➡️📱';
-		position:fixed;
-		top:0;
-		left:0;
-		right:0;
-		background:linear-gradient(135deg,#FF6B35 0%,#FF1744 100%);
-		color:#fff;
-		text-align:center;
-		padding:8px;
-		font-size:12px;
-		font-weight:bold;
-		z-index:9999;
-		box-shadow:0 2px 8px rgba(0,0,0,.3);
-		animation:pulse 2s ease-in-out infinite;
+	.rotate-device-overlay{
+		display:flex!important;
+	}
+	.container{
+		display:none;
+	}
+	.rotate-device-content h2{
+		font-size:24px;
+	}
+	.rotate-device-content p{
+		font-size:14px;
+	}
+	.rotate-icon{
+		font-size:42px;
 	}
 }
-@keyframes pulse{
-	0%,100%{opacity:1}
-	50%{opacity:0.8}
+
+/* 小屏设备旋转提示优化 */
+@media (orientation: portrait) and (max-width: 480px) {
+	.rotate-device-content h2{
+		font-size:20px;
+	}
+	.rotate-device-content p{
+		font-size:13px;
+	}
+	.rotate-icon{
+		font-size:36px;
+	}
+	.rotate-animation svg{
+		width:60px;
+		height:60px;
+	}
+	.rotate-hint-btn{
+		padding:10px 24px;
+		font-size:14px;
+	}
 }
