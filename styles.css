@@ -1,23 +1,33 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Microsoft YaHei','SimHei',Arial,sans-serif;background:linear-gradient(135deg,#A1C4FD 0%,#C2E9FB 100%);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 .container{width:100%;max-width:1080px;background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.25);overflow:hidden}
-.header{padding:24px 24px 8px;background:linear-gradient(135deg,#56CCF2 0%,#2F80ED 100%);color:#fff;text-align:center}
-.header h1{font-size:28px;margin-bottom:6px;text-shadow:0 2px 6px rgba(0,0,0,.2)}
-.fancy-title{font-size:36px;font-weight:900;background:linear-gradient(135deg,#FFD700 0%,#FF6B35 50%,#FF1744 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:0 4px 12px rgba(255,107,53,.5);display:inline-block;position:relative;animation:glow 2s ease-in-out infinite alternate}
+
+/* 横屏布局（默认显示） */
+.landscape-layout{display:grid;grid-template-columns:140px 1fr 160px;grid-template-rows:1fr;min-height:600px;gap:0}
+.portrait-layout{display:none}
+.sidebar-left{background:linear-gradient(180deg,#56CCF2 0%,#2F80ED 100%);display:flex;flex-direction:column;padding:16px 8px}
+.sidebar-right{background:#f7f8fa;display:flex;flex-direction:column;padding:12px 8px;overflow-y:auto}
+.game-area{display:flex;flex-direction:column;background:#f0f4f8;position:relative}
+
+.header{padding:12px 8px;color:#fff;text-align:center}
+.header h1{font-size:18px;margin-bottom:8px;text-shadow:0 2px 6px rgba(0,0,0,.2);line-height:1.3}
+.header .subtitle{font-size:12px;opacity:.9;display:block;margin-top:4px}
+.fancy-title{font-size:24px;font-weight:900;background:linear-gradient(135deg,#FFD700 0%,#FF6B35 50%,#FF1744 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:0 4px 12px rgba(255,107,53,.5);display:inline-block;position:relative;animation:glow 2s ease-in-out infinite alternate}
 @keyframes glow{0%{filter:drop-shadow(0 0 5px rgba(255,215,0,.6)) drop-shadow(0 0 10px rgba(255,107,53,.4))}100%{filter:drop-shadow(0 0 15px rgba(255,215,0,.8)) drop-shadow(0 0 20px rgba(255,107,53,.6))}}
-.subtitle{opacity:.95}
+
 .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px;background:#f7f8fa}
-.stats{display:flex;gap:12px;flex-wrap:wrap}
-.stat{background:#fff;border-radius:10px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;gap:8px;align-items:baseline}
-.stat span{color:#666;font-size:12px}
-.stat strong{font-size:18px;color:#333}
+.toolbar-bottom{padding:8px 12px;background:rgba(255,255,255,.8);display:flex;justify-content:center;align-items:center;border-top:2px solid #e9ecef}
+.stats{display:flex;flex-direction:column;gap:10px;width:100%}
+.stat{background:#fff;border-radius:8px;padding:8px 10px;box-shadow:0 2px 6px rgba(0,0,0,.08);display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center}
+.stat span{color:#666;font-size:11px}
+.stat strong{font-size:16px;color:#333;font-weight:700}
 .buttons{display:flex;gap:8px}
 .btn{border:none;border-radius:10px;padding:10px 16px;background:#e9ecef;color:#333;cursor:pointer;transition:.2s;font-weight:600}
 .btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.12)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .btn.primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff}
-.game-wrap{position:relative;padding:16px}
-#board{display:block;margin:0 auto;background:#e6f2ff;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.25);max-width:100%;height:auto;touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none}
+.game-wrap{position:relative;padding:12px;flex:1;display:flex;align-items:center;justify-content:center}
+#board{display:block;background:#e6f2ff;border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.25);max-width:100%;max-height:100%;touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none}
 .overlay{position:absolute;inset:16px;background:rgba(0,0,0,.6);display:flex;justify-content:center;align-items:center;border-radius:10px}
 .overlay.hidden{display:none}
 .panel{background:#fff;max-width:520px;width:92%;padding:28px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);text-align:center}
@@ -43,20 +53,57 @@ body{font-family:'Microsoft YaHei','SimHei',Arial,sans-serif;background:linear-g
 .modal-options label{display:flex;align-items:center;gap:8px;font-size:14px}
 .modal-options input[type="number"]{width:60px;padding:4px 8px;border:1px solid #cbd5e0;border-radius:4px;text-align:center}
 
-/* 移动端响应式优化 */
-@media (max-width: 768px) {
+/* 移动端横屏优化 - 优先级最高 */
+@media (max-width: 1024px) and (orientation: landscape) {
+	body{padding:5px;align-items:stretch;min-height:100vh}
+	.container{border-radius:8px;height:100vh;max-height:100vh;display:flex;flex-direction:column}
+	.landscape-layout{min-height:0;flex:1;grid-template-columns:90px 1fr 110px;gap:0}
+	.portrait-layout{display:none!important}
+	.sidebar-left{padding:6px 3px}
+	.sidebar-right{padding:6px 3px;overflow-y:auto}
+	.header{padding:6px 3px}
+	.header h1{font-size:13px;margin-bottom:3px;line-height:1.2}
+	.header .subtitle{font-size:9px}
+	.fancy-title{font-size:16px}
+	.stats{gap:5px}
+	.stat{padding:5px 3px;border-radius:5px}
+	.stat span{font-size:8px}
+	.stat strong{font-size:12px}
+	.game-wrap{padding:4px;flex:1}
+	.game-area{flex:1;min-height:0}
+	.toolbar-bottom{padding:5px 6px;border-top:1px solid #e9ecef}
+	.buttons{gap:5px;justify-content:center}
+	.btn{padding:5px 8px;font-size:10px;border-radius:5px}
+	#board{border-radius:5px;object-fit:contain}
+	.panel{padding:14px;max-width:380px}
+	.panel h2{font-size:15px}
+	.panel p{font-size:11px;line-height:1.3}
+	.footer{display:none!important}
+	.toast{font-size:11px;padding:5px 8px;top:6px}
+	.modal-content{max-width:88%;max-height:82vh}
+	.modal-header{padding:10px 14px}
+	.modal-header h2{font-size:13px}
+	.modal-body{padding:10px}
+	#wordInput{min-height:110px;font-size:11px}
+	.overlay{inset:4px}
+}
+
+/* 移动端竖屏优化 */
+@media (max-width: 768px) and (orientation: portrait) {
 	body{padding:10px;align-items:flex-start}
 	.container{border-radius:12px;margin-top:10px}
-	.header{padding:16px 12px 6px}
-	.header h1{font-size:20px}
-	.fancy-title{font-size:26px}
-	.toolbar{padding:12px;gap:8px}
-	.stats{gap:6px;width:100%}
-	.stat{padding:6px 10px;font-size:11px;flex:1;min-width:70px;justify-content:center;flex-direction:column;align-items:center;gap:2px}
+	/* 竖屏时显示竖屏布局，隐藏横屏布局 */
+	.landscape-layout{display:none!important}
+	.portrait-layout{display:block}
+	.header-portrait{padding:16px 12px 6px;background:linear-gradient(135deg,#56CCF2 0%,#2F80ED 100%);color:#fff;text-align:center}
+	.header-portrait h1{font-size:20px}
+	.toolbar-portrait{padding:12px;gap:8px;display:flex;background:#f7f8fa;justify-content:space-between;align-items:center;flex-wrap:wrap}
+	.stats-portrait{gap:6px;width:100%;flex-direction:row;flex-wrap:wrap;display:flex}
+	.stats-portrait .stat{padding:6px 10px;font-size:11px;flex:1;min-width:70px;justify-content:center;flex-direction:column;align-items:center;gap:2px}
 	.stat span{font-size:10px}
 	.stat strong{font-size:14px}
-	.buttons{width:100%;gap:6px}
-	.btn{padding:8px 12px;font-size:13px;flex:1}
+	.buttons-portrait{width:100%;gap:6px;display:flex}
+	.buttons-portrait .btn{padding:8px 12px;font-size:13px;flex:1}
 	.game-wrap{padding:10px}
 	#board{border-radius:8px;width:100%;height:auto}
 	.panel{padding:20px;max-width:90%}
@@ -75,7 +122,8 @@ body{font-family:'Microsoft YaHei','SimHei',Arial,sans-serif;background:linear-g
 	.toast{font-size:13px;padding:8px 12px;max-width:90%;white-space:pre-wrap;word-break:break-word}
 }
 
-@media (max-width: 480px) {
+/* 小屏竖屏进一步优化 */
+@media (max-width: 480px) and (orientation: portrait) {
 	body{padding:5px}
 	.container{border-radius:8px;margin-top:5px}
 	.header{padding:12px 8px 4px}
@@ -98,4 +146,28 @@ body{font-family:'Microsoft YaHei','SimHei',Arial,sans-serif;background:linear-g
 	#wordBankStatus{font-size:10px;padding:2px 8px}
 	.modal-header h2{font-size:15px}
 	#wordInput{min-height:150px;font-size:12px}
+}
+
+/* 强制横屏提示（仅在竖屏时显示） */
+@media (orientation: portrait) and (max-width: 768px) {
+	body::before{
+		content:'请旋转屏幕至横屏以获得最佳体验 📱➡️📱';
+		position:fixed;
+		top:0;
+		left:0;
+		right:0;
+		background:linear-gradient(135deg,#FF6B35 0%,#FF1744 100%);
+		color:#fff;
+		text-align:center;
+		padding:8px;
+		font-size:12px;
+		font-weight:bold;
+		z-index:9999;
+		box-shadow:0 2px 8px rgba(0,0,0,.3);
+		animation:pulse 2s ease-in-out infinite;
+	}
+}
+@keyframes pulse{
+	0%,100%{opacity:1}
+	50%{opacity:0.8}
 }

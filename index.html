@@ -5,45 +5,87 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="screen-orientation" content="landscape">
+	<meta name="x5-orientation" content="landscape">
+	<meta name="x5-fullscreen" content="true">
 	<title>大嘴鸟 · 字词学习版</title>
 	<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 	<div class="container">
-		<header class="header">
-			<h1>🦜 <span class="fancy-title">大嘴鸟</span> · 字词学习版</h1>
-		</header>
+		<!-- 横屏布局：左侧标题、中间游戏区、右侧统计、底部按钮 -->
+		<div class="landscape-layout">
+			<!-- 左侧标题栏 -->
+			<aside class="sidebar-left">
+				<header class="header header-landscape">
+					<h1>🦜 <span class="fancy-title">大嘴鸟</span></h1>
+					<p class="subtitle">字词学习版</p>
+				</header>
+			</aside>
 
-		<section class="toolbar">
-			<div class="stats">
-				<div class="stat"><span>分数</span><strong id="score">0</strong></div>
-				<div class="stat"><span>等级</span><strong id="level">1</strong></div>
-				<div class="stat"><span>速度</span><strong id="speed">慢</strong></div>
-				<div class="stat"><span>正确</span><strong id="correct">0</strong></div>
-				<div class="stat"><span>错误</span><strong id="wrong">0</strong></div>
-				<div class="stat"><span>升级进度</span><strong id="progress">0/15</strong></div>
-			</div>
-			<div class="buttons">
-				<button id="startBtn" class="btn primary">开始</button>
-				<button id="pauseBtn" class="btn" disabled>暂停</button>
-				<button id="resetBtn" class="btn">重置</button>
-				<button id="musicBtn" class="btn" title="音乐开关">🔊</button>
-			</div>
-		</section>
+			<!-- 中间游戏区域 -->
+			<main class="game-area">
+				<section class="game-wrap">
+					<canvas id="board" width="960" height="640"></canvas>
+					<div id="overlay" class="overlay">
+						<div class="panel">
+							<h2 id="overlayTitle">点击开始</h2>
+							<p id="overlayTip">点击字词，大嘴鸟飞去吞食：每级需正确15个；每9个正确词必出1个错误词；随等级外形解锁肚皮/冠羽/双翼/尾羽。</p>
+							<div class="panel-buttons">
+								<button class="btn primary" id="overlayStart">开始游戏</button>
+							</div>
+						</div>
+					</div>
+					<div id="toast" class="toast hidden"></div>
+				</section>
 
-		<section class="game-wrap">
-			<canvas id="board" width="960" height="640"></canvas>
-			<div id="overlay" class="overlay">
-				<div class="panel">
-					<h2 id="overlayTitle">点击开始</h2>
-					<p id="overlayTip">点击字词，大嘴鸟飞去吞食：每级需正确15个；每9个正确词必出1个错误词；随等级外形解锁肚皮/冠羽/双翼/尾羽。</p>
-					<div class="panel-buttons">
-						<button class="btn primary" id="overlayStart">开始游戏</button>
+				<!-- 底部工具按钮（横屏专用） -->
+				<div class="toolbar-bottom">
+					<div class="buttons">
+						<button id="startBtn" class="btn primary">开始</button>
+						<button id="pauseBtn" class="btn" disabled>暂停</button>
+						<button id="resetBtn" class="btn">重置</button>
+						<button id="musicBtn" class="btn" title="音乐开关">🔊</button>
 					</div>
 				</div>
-			</div>
-			<div id="toast" class="toast hidden"></div>
-		</section>
+			</main>
+
+			<!-- 右侧统计栏 -->
+			<aside class="sidebar-right">
+				<div class="stats stats-landscape">
+					<div class="stat"><span>分数</span><strong id="score">0</strong></div>
+					<div class="stat"><span>等级</span><strong id="level">1</strong></div>
+					<div class="stat"><span>速度</span><strong id="speed">慢</strong></div>
+					<div class="stat"><span>正确</span><strong id="correct">0</strong></div>
+					<div class="stat"><span>错误</span><strong id="wrong">0</strong></div>
+					<div class="stat"><span>升级进度</span><strong id="progress">0/15</strong></div>
+				</div>
+			</aside>
+		</div>
+
+		<!-- 竖屏布局备用（仅在竖屏时显示） -->
+		<div class="portrait-layout">
+			<header class="header header-portrait">
+				<h1>🦜 <span class="fancy-title">大嘴鸟</span> · 字词学习版</h1>
+			</header>
+			
+			<section class="toolbar toolbar-portrait">
+				<div class="stats stats-portrait">
+					<div class="stat"><span>分数</span><strong class="score-clone">0</strong></div>
+					<div class="stat"><span>等级</span><strong class="level-clone">1</strong></div>
+					<div class="stat"><span>速度</span><strong class="speed-clone">慢</strong></div>
+					<div class="stat"><span>正确</span><strong class="correct-clone">0</strong></div>
+					<div class="stat"><span>错误</span><strong class="wrong-clone">0</strong></div>
+					<div class="stat"><span>升级进度</span><strong class="progress-clone">0/15</strong></div>
+				</div>
+				<div class="buttons buttons-portrait">
+					<button class="btn primary btn-start-clone">开始</button>
+					<button class="btn btn-pause-clone" disabled>暂停</button>
+					<button class="btn btn-reset-clone">重置</button>
+					<button class="btn btn-music-clone" title="音乐开关">🔊</button>
+				</div>
+			</section>
+		</div>
 
 	<footer class="footer">
 		<div>

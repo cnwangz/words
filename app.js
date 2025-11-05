@@ -5,7 +5,7 @@
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
 
-// UI
+// UI - 横屏布局元素
 const scoreEl = document.getElementById('score');
 const levelEl = document.getElementById('level');
 const speedEl = document.getElementById('speed');
@@ -23,6 +23,30 @@ const overlayTip = document.getElementById('overlayTip');
 const toast = document.getElementById('toast');
 const bgMusic = document.getElementById('bgMusic');
 const musicBtn = document.getElementById('musicBtn');
+
+// 竖屏布局元素（克隆版）
+const scoreClone = document.querySelector('.score-clone');
+const levelClone = document.querySelector('.level-clone');
+const speedClone = document.querySelector('.speed-clone');
+const correctClone = document.querySelector('.correct-clone');
+const wrongClone = document.querySelector('.wrong-clone');
+const progressClone = document.querySelector('.progress-clone');
+const startBtnClone = document.querySelector('.btn-start-clone');
+const pauseBtnClone = document.querySelector('.btn-pause-clone');
+const resetBtnClone = document.querySelector('.btn-reset-clone');
+const musicBtnClone = document.querySelector('.btn-music-clone');
+
+// 同步更新函数：更新所有显示元素
+function updateAllDisplays(element, cloneElement, value) {
+	if (element) element.textContent = value;
+	if (cloneElement) cloneElement.textContent = value;
+}
+
+// 同步按钮状态
+function syncButtonState(mainBtn, cloneBtn, disabled) {
+	if (mainBtn) mainBtn.disabled = disabled;
+	if (cloneBtn) cloneBtn.disabled = disabled;
+}
 
 // 音乐状态
 let musicEnabled = true;
@@ -86,13 +110,14 @@ function resetGame() {
 }
 
 function updateUI() {
-	scoreEl.textContent = STATE.score;
-	levelEl.textContent = STATE.level;
-	speedEl.textContent = LEVELS[STATE.level - 1].name;
-	correctEl.textContent = STATE.correct;
-	wrongEl.textContent = STATE.wrong;
+	// 同步更新横屏和竖屏布局
+	updateAllDisplays(scoreEl, scoreClone, STATE.score);
+	updateAllDisplays(levelEl, levelClone, STATE.level);
+	updateAllDisplays(speedEl, speedClone, LEVELS[STATE.level - 1].name);
+	updateAllDisplays(correctEl, correctClone, STATE.correct);
+	updateAllDisplays(wrongEl, wrongClone, STATE.wrong);
 	const need = 15; const cur = STATE.correct % need;
-	progressEl && (progressEl.textContent = `${cur}/15`);
+	updateAllDisplays(progressEl, progressClone, `${cur}/15`);
 	wrongRateEl && (wrongRateEl.textContent = `${Math.round(STATE.probWrong*100)}%`);
 }
 
@@ -1367,7 +1392,8 @@ function startGame() {
 	if (STATE.running) return;
 	STATE.running = true; STATE.paused = false;
 	overlay.classList.add('hidden');
-	startBtn.disabled = true; pauseBtn.disabled = false;
+	syncButtonState(startBtn, startBtnClone, true);
+	syncButtonState(pauseBtn, pauseBtnClone, false);
 	
 	// 播放背景音乐（如果已启用）
 	if (bgMusic && musicEnabled) {
@@ -1389,7 +1415,7 @@ function pauseGame() {
 			bgMusic.pause();
 		}
 		showToast('已暂停 (P)', '#334155');
-		pauseBtn.textContent = '继续';
+		updateAllDisplays(pauseBtn, pauseBtnClone, '继续');
 	} else {
 		startLoops();
 		// 继续播放背景音乐（如果已启用）
@@ -1398,7 +1424,7 @@ function pauseGame() {
 				console.log('背景音乐播放失败:', err);
 			});
 		}
-		pauseBtn.textContent = '暂停';
+		updateAllDisplays(pauseBtn, pauseBtnClone, '暂停');
 		showToast('继续', '#334155');
 	}
 }
@@ -1407,7 +1433,9 @@ function resetGame() {
 	cancelAnimationFrame(animationId);
 	clearInterval(spawnTimer);
 	STATE.running = false; STATE.paused = false;
-	startBtn.disabled = false; pauseBtn.disabled = true; pauseBtn.textContent = '暂停';
+	syncButtonState(startBtn, startBtnClone, false);
+	syncButtonState(pauseBtn, pauseBtnClone, true);
+	updateAllDisplays(pauseBtn, pauseBtnClone, '暂停');
 	bird.target = null; items = [];
 	STATE.score = 0; STATE.level = 1; STATE.correct = 0; STATE.wrong = 0; bird.size = 16; bird.x = 120; bird.y = canvas.height - 120;
 	
@@ -1452,8 +1480,9 @@ function handleKey(e) {
 function toggleMusic() {
 	musicEnabled = !musicEnabled;
 	if (musicEnabled) {
-		musicBtn.textContent = '🔊';
-		musicBtn.title = '关闭音乐';
+		updateAllDisplays(musicBtn, musicBtnClone, '🔊');
+		if (musicBtn) musicBtn.title = '关闭音乐';
+		if (musicBtnClone) musicBtnClone.title = '关闭音乐';
 		// 如果游戏正在运行且未暂停，播放音乐
 		if (STATE.running && !STATE.paused && bgMusic) {
 			bgMusic.play().catch(err => {
@@ -1462,8 +1491,9 @@ function toggleMusic() {
 		}
 		showToast('🔊 音乐已开启', '#16a34a');
 	} else {
-		musicBtn.textContent = '🔇';
-		musicBtn.title = '开启音乐';
+		updateAllDisplays(musicBtn, musicBtnClone, '🔇');
+		if (musicBtn) musicBtn.title = '开启音乐';
+		if (musicBtnClone) musicBtnClone.title = '开启音乐';
 		// 停止音乐
 		if (bgMusic) {
 			bgMusic.pause();
@@ -1636,6 +1666,50 @@ resetBtn.addEventListener('click', resetGame);
 overlayStart.addEventListener('click', startGame);
 musicBtn.addEventListener('click', toggleMusic);
 window.addEventListener('keydown', handleKey);
+
+// 竖屏布局按钮同步事件
+if (startBtnClone) startBtnClone.addEventListener('click', startGame);
+if (pauseBtnClone) pauseBtnClone.addEventListener('click', pauseGame);
+if (resetBtnClone) resetBtnClone.addEventListener('click', resetGame);
+if (musicBtnClone) musicBtnClone.addEventListener('click', toggleMusic);
+
+// 屏幕方向变化检测和画布调整
+function handleOrientationChange() {
+	const isLandscape = window.innerWidth > window.innerHeight;
+	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+	
+	if (isMobile && isLandscape) {
+		// 横屏模式：调整画布以充分利用空间
+		const availableHeight = window.innerHeight - 100; // 减去按钮和边距
+		const maxWidth = availableHeight * 1.5; // 保持16:10的宽高比
+		canvas.style.maxHeight = availableHeight + 'px';
+		canvas.style.width = 'auto';
+		canvas.style.height = 'auto';
+	} else {
+		// 其他模式：恢复默认
+		canvas.style.maxHeight = '';
+		canvas.style.width = '';
+		canvas.style.height = '';
+	}
+}
+
+// 监听屏幕方向变化
+window.addEventListener('resize', handleOrientationChange);
+window.addEventListener('orientationchange', handleOrientationChange);
+
+// 初始化时调用一次
+handleOrientationChange();
+
+// 尝试锁定屏幕方向为横屏（需要用户交互后才能生效）
+if (screen.orientation && screen.orientation.lock) {
+	document.addEventListener('click', function lockOrientation() {
+		screen.orientation.lock('landscape').catch(err => {
+			console.log('无法锁定屏幕方向:', err);
+		});
+		// 只尝试一次
+		document.removeEventListener('click', lockOrientation);
+	}, { once: true });
+}
 
 // ========== 导入/清除词库功能 ==========
 const importBtn = document.getElementById('importBtn');
