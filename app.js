@@ -94,6 +94,21 @@ function updateUI() {
 	const need = 15; const cur = STATE.correct % need;
 	progressEl && (progressEl.textContent = `${cur}/15`);
 	wrongRateEl && (wrongRateEl.textContent = `${Math.round(STATE.probWrong*100)}%`);
+	
+	// 同步更新portrait-layout的克隆元素
+	const scoreClone = document.querySelector('.score-clone');
+	const levelClone = document.querySelector('.level-clone');
+	const speedClone = document.querySelector('.speed-clone');
+	const correctClone = document.querySelector('.correct-clone');
+	const wrongClone = document.querySelector('.wrong-clone');
+	const progressClone = document.querySelector('.progress-clone');
+	
+	if (scoreClone) scoreClone.textContent = STATE.score;
+	if (levelClone) levelClone.textContent = STATE.level;
+	if (speedClone) speedClone.textContent = LEVELS[STATE.level - 1].name;
+	if (correctClone) correctClone.textContent = STATE.correct;
+	if (wrongClone) wrongClone.textContent = STATE.wrong;
+	if (progressClone) progressClone.textContent = `${cur}/15`;
 }
 
 // 背景装饰元素
@@ -1362,6 +1377,12 @@ function startGame() {
 	overlay.classList.add('hidden');
 	startBtn.disabled = true; pauseBtn.disabled = false;
 	
+	// 同步克隆按钮状态
+	const startBtnClone = document.querySelector('.btn-start-clone');
+	const pauseBtnClone = document.querySelector('.btn-pause-clone');
+	if (startBtnClone) startBtnClone.disabled = true;
+	if (pauseBtnClone) pauseBtnClone.disabled = false;
+	
 	// 播放背景音乐（如果已启用）
 	if (bgMusic && musicEnabled) {
 		bgMusic.play().catch(err => {
@@ -1375,6 +1396,7 @@ function startGame() {
 function pauseGame() {
 	if (!STATE.running) return;
 	STATE.paused = !STATE.paused;
+	const pauseBtnClone = document.querySelector('.btn-pause-clone');
 	if (STATE.paused) {
 		clearInterval(spawnTimer);
 		// 暂停背景音乐
@@ -1383,6 +1405,7 @@ function pauseGame() {
 		}
 		showToast('已暂停 (P)', '#334155');
 		pauseBtn.textContent = '继续';
+		if (pauseBtnClone) pauseBtnClone.textContent = '继续';
 	} else {
 		startLoops();
 		// 继续播放背景音乐（如果已启用）
@@ -1392,6 +1415,7 @@ function pauseGame() {
 			});
 		}
 		pauseBtn.textContent = '暂停';
+		if (pauseBtnClone) pauseBtnClone.textContent = '暂停';
 		showToast('继续', '#334155');
 	}
 }
@@ -1401,6 +1425,16 @@ function resetGame() {
 	clearInterval(spawnTimer);
 	STATE.running = false; STATE.paused = false;
 	startBtn.disabled = false; pauseBtn.disabled = true; pauseBtn.textContent = '暂停';
+	
+	// 同步克隆按钮状态
+	const startBtnClone = document.querySelector('.btn-start-clone');
+	const pauseBtnClone = document.querySelector('.btn-pause-clone');
+	if (startBtnClone) startBtnClone.disabled = false;
+	if (pauseBtnClone) {
+		pauseBtnClone.disabled = true;
+		pauseBtnClone.textContent = '暂停';
+	}
+	
 	bird.target = null; items = [];
 	STATE.score = 0; STATE.level = 1; STATE.correct = 0; STATE.wrong = 0; bird.size = 16; bird.x = 120; bird.y = canvas.height - 120;
 	
@@ -1444,9 +1478,14 @@ function handleKey(e) {
 // 音乐控制函数
 function toggleMusic() {
 	musicEnabled = !musicEnabled;
+	const musicBtnClone = document.querySelector('.btn-music-clone');
 	if (musicEnabled) {
 		musicBtn.textContent = '🔊';
 		musicBtn.title = '关闭音乐';
+		if (musicBtnClone) {
+			musicBtnClone.textContent = '🔊';
+			musicBtnClone.title = '关闭音乐';
+		}
 		// 如果游戏正在运行且未暂停，播放音乐
 		if (STATE.running && !STATE.paused && bgMusic) {
 			bgMusic.play().catch(err => {
@@ -1457,6 +1496,10 @@ function toggleMusic() {
 	} else {
 		musicBtn.textContent = '🔇';
 		musicBtn.title = '开启音乐';
+		if (musicBtnClone) {
+			musicBtnClone.textContent = '🔇';
+			musicBtnClone.title = '开启音乐';
+		}
 		// 停止音乐
 		if (bgMusic) {
 			bgMusic.pause();
@@ -1595,6 +1638,17 @@ resetBtn.addEventListener('click', resetGame);
 overlayStart.addEventListener('click', startGame);
 musicBtn.addEventListener('click', toggleMusic);
 window.addEventListener('keydown', handleKey);
+
+// 为portrait-layout的克隆按钮添加事件监听
+const startBtnClone = document.querySelector('.btn-start-clone');
+const pauseBtnClone = document.querySelector('.btn-pause-clone');
+const resetBtnClone = document.querySelector('.btn-reset-clone');
+const musicBtnClone = document.querySelector('.btn-music-clone');
+
+if (startBtnClone) startBtnClone.addEventListener('click', startGame);
+if (pauseBtnClone) pauseBtnClone.addEventListener('click', pauseGame);
+if (resetBtnClone) resetBtnClone.addEventListener('click', resetGame);
+if (musicBtnClone) musicBtnClone.addEventListener('click', toggleMusic);
 
 // ========== 导入/清除词库功能 ==========
 const importBtn = document.getElementById('importBtn');
