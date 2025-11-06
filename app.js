@@ -94,21 +94,6 @@ function updateUI() {
 	const need = 15; const cur = STATE.correct % need;
 	progressEl && (progressEl.textContent = `${cur}/15`);
 	wrongRateEl && (wrongRateEl.textContent = `${Math.round(STATE.probWrong*100)}%`);
-	
-	// 同步更新portrait-layout的克隆元素
-	const scoreClone = document.querySelector('.score-clone');
-	const levelClone = document.querySelector('.level-clone');
-	const speedClone = document.querySelector('.speed-clone');
-	const correctClone = document.querySelector('.correct-clone');
-	const wrongClone = document.querySelector('.wrong-clone');
-	const progressClone = document.querySelector('.progress-clone');
-	
-	if (scoreClone) scoreClone.textContent = STATE.score;
-	if (levelClone) levelClone.textContent = STATE.level;
-	if (speedClone) speedClone.textContent = LEVELS[STATE.level - 1].name;
-	if (correctClone) correctClone.textContent = STATE.correct;
-	if (wrongClone) wrongClone.textContent = STATE.wrong;
-	if (progressClone) progressClone.textContent = `${cur}/15`;
 }
 
 // 背景装饰元素
@@ -1340,12 +1325,7 @@ function maybeLevelUp() {
 function onClickCanvas(e) {
 	if (!STATE.running || STATE.paused) return;
 	const rect = canvas.getBoundingClientRect();
-	
-	// 考虑canvas的缩放比例，计算准确的坐标
-	const scaleX = canvas.width / rect.width;
-	const scaleY = canvas.height / rect.height;
-	const mx = (e.clientX - rect.left) * scaleX;
-	const my = (e.clientY - rect.top) * scaleY;
+	const mx = e.clientX - rect.left; const my = e.clientY - rect.top;
 	
 	// 记录点击位置，用于树木摆动
 	lastClickX = mx;
@@ -1382,12 +1362,6 @@ function startGame() {
 	overlay.classList.add('hidden');
 	startBtn.disabled = true; pauseBtn.disabled = false;
 	
-	// 同步克隆按钮状态
-	const startBtnClone = document.querySelector('.btn-start-clone');
-	const pauseBtnClone = document.querySelector('.btn-pause-clone');
-	if (startBtnClone) startBtnClone.disabled = true;
-	if (pauseBtnClone) pauseBtnClone.disabled = false;
-	
 	// 播放背景音乐（如果已启用）
 	if (bgMusic && musicEnabled) {
 		bgMusic.play().catch(err => {
@@ -1401,7 +1375,6 @@ function startGame() {
 function pauseGame() {
 	if (!STATE.running) return;
 	STATE.paused = !STATE.paused;
-	const pauseBtnClone = document.querySelector('.btn-pause-clone');
 	if (STATE.paused) {
 		clearInterval(spawnTimer);
 		// 暂停背景音乐
@@ -1410,7 +1383,6 @@ function pauseGame() {
 		}
 		showToast('已暂停 (P)', '#334155');
 		pauseBtn.textContent = '继续';
-		if (pauseBtnClone) pauseBtnClone.textContent = '继续';
 	} else {
 		startLoops();
 		// 继续播放背景音乐（如果已启用）
@@ -1420,7 +1392,6 @@ function pauseGame() {
 			});
 		}
 		pauseBtn.textContent = '暂停';
-		if (pauseBtnClone) pauseBtnClone.textContent = '暂停';
 		showToast('继续', '#334155');
 	}
 }
@@ -1430,16 +1401,6 @@ function resetGame() {
 	clearInterval(spawnTimer);
 	STATE.running = false; STATE.paused = false;
 	startBtn.disabled = false; pauseBtn.disabled = true; pauseBtn.textContent = '暂停';
-	
-	// 同步克隆按钮状态
-	const startBtnClone = document.querySelector('.btn-start-clone');
-	const pauseBtnClone = document.querySelector('.btn-pause-clone');
-	if (startBtnClone) startBtnClone.disabled = false;
-	if (pauseBtnClone) {
-		pauseBtnClone.disabled = true;
-		pauseBtnClone.textContent = '暂停';
-	}
-	
 	bird.target = null; items = [];
 	STATE.score = 0; STATE.level = 1; STATE.correct = 0; STATE.wrong = 0; bird.size = 16; bird.x = 120; bird.y = canvas.height - 120;
 	
@@ -1483,14 +1444,9 @@ function handleKey(e) {
 // 音乐控制函数
 function toggleMusic() {
 	musicEnabled = !musicEnabled;
-	const musicBtnClone = document.querySelector('.btn-music-clone');
 	if (musicEnabled) {
 		musicBtn.textContent = '🔊';
 		musicBtn.title = '关闭音乐';
-		if (musicBtnClone) {
-			musicBtnClone.textContent = '🔊';
-			musicBtnClone.title = '关闭音乐';
-		}
 		// 如果游戏正在运行且未暂停，播放音乐
 		if (STATE.running && !STATE.paused && bgMusic) {
 			bgMusic.play().catch(err => {
@@ -1501,10 +1457,6 @@ function toggleMusic() {
 	} else {
 		musicBtn.textContent = '🔇';
 		musicBtn.title = '开启音乐';
-		if (musicBtnClone) {
-			musicBtnClone.textContent = '🔇';
-			musicBtnClone.title = '开启音乐';
-		}
 		// 停止音乐
 		if (bgMusic) {
 			bgMusic.pause();
@@ -1522,10 +1474,8 @@ function startLongPress(e) {
 	// 如果是在游戏进行中点击词条，不触发长按
 	if (STATE.running && !STATE.paused) {
 		const rect = canvas.getBoundingClientRect();
-		const scaleX = canvas.width / rect.width;
-		const scaleY = canvas.height / rect.height;
-		const mx = (e.clientX - rect.left) * scaleX;
-		const my = (e.clientY - rect.top) * scaleY;
+		const mx = e.clientX - rect.left;
+		const my = e.clientY - rect.top;
 		
 		// 检查是否点击了词条
 		for (const it of items) {
@@ -1645,17 +1595,6 @@ resetBtn.addEventListener('click', resetGame);
 overlayStart.addEventListener('click', startGame);
 musicBtn.addEventListener('click', toggleMusic);
 window.addEventListener('keydown', handleKey);
-
-// 为portrait-layout的克隆按钮添加事件监听
-const startBtnClone = document.querySelector('.btn-start-clone');
-const pauseBtnClone = document.querySelector('.btn-pause-clone');
-const resetBtnClone = document.querySelector('.btn-reset-clone');
-const musicBtnClone = document.querySelector('.btn-music-clone');
-
-if (startBtnClone) startBtnClone.addEventListener('click', startGame);
-if (pauseBtnClone) pauseBtnClone.addEventListener('click', pauseGame);
-if (resetBtnClone) resetBtnClone.addEventListener('click', resetGame);
-if (musicBtnClone) musicBtnClone.addEventListener('click', toggleMusic);
 
 // ========== 导入/清除词库功能 ==========
 const importBtn = document.getElementById('importBtn');
@@ -1904,148 +1843,3 @@ updateWordBankStatus();
 
 // 初始
 resetGame();
-
-// ========== 动态移动游戏画布到正确的容器 ==========
-function moveGameWrapToCorrectContainer() {
-	const gameWrap = document.getElementById('gameWrap');
-	const landscapeLayout = document.querySelector('.landscape-layout');
-	const portraitLayout = document.querySelector('.portrait-layout');
-	const gameAreaLandscape = document.getElementById('gameAreaLandscape');
-	const gameAreaPortrait = document.getElementById('gameAreaPortrait');
-	
-	if (!gameWrap) return;
-	
-	// 判断当前应该显示哪个布局
-	const isLandscapeVisible = landscapeLayout && window.getComputedStyle(landscapeLayout).display !== 'none';
-	const isPortraitVisible = portraitLayout && window.getComputedStyle(portraitLayout).display !== 'none';
-	
-	if (isLandscapeVisible && gameAreaLandscape && gameWrap.parentElement !== gameAreaLandscape) {
-		// 移动到横屏布局的游戏区
-		gameAreaLandscape.appendChild(gameWrap);
-	} else if (isPortraitVisible && gameAreaPortrait && gameWrap.parentElement !== gameAreaPortrait) {
-		// 移动到竖屏布局的游戏区
-		gameAreaPortrait.appendChild(gameWrap);
-	}
-}
-
-// 页面加载时移动
-moveGameWrapToCorrectContainer();
-
-// 监听窗口大小变化
-window.addEventListener('resize', moveGameWrapToCorrectContainer);
-
-// ========== 移动端全屏功能 ==========
-// 检测是否为移动设备（更严格的判断）
-function isMobileDevice() {
-	// 检查UA
-	const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-	// 检查触摸屏和屏幕尺寸
-	const hasTouchScreen = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-	const smallScreen = window.innerWidth < 1024;
-	
-	return mobileUA && hasTouchScreen && smallScreen;
-}
-
-// 请求全屏
-function requestFullscreen() {
-	const elem = document.documentElement;
-	if (elem.requestFullscreen) {
-		elem.requestFullscreen().catch(err => {
-			console.log('全屏请求失败:', err);
-		});
-	} else if (elem.webkitRequestFullscreen) { // Safari
-		elem.webkitRequestFullscreen();
-	} else if (elem.mozRequestFullScreen) { // Firefox
-		elem.mozRequestFullScreen();
-	} else if (elem.msRequestFullscreen) { // IE/Edge
-		elem.msRequestFullscreen();
-	}
-}
-
-// 退出全屏
-function exitFullscreen() {
-	if (document.exitFullscreen) {
-		document.exitFullscreen();
-	} else if (document.webkitExitFullscreen) {
-		document.webkitExitFullscreen();
-	} else if (document.mozCancelFullScreen) {
-		document.mozCancelFullScreen();
-	} else if (document.msExitFullscreen) {
-		document.msExitFullscreen();
-	}
-}
-
-// 检查是否全屏
-function isFullscreen() {
-	return !!(document.fullscreenElement || document.webkitFullscreenElement || 
-	          document.mozFullScreenElement || document.msFullscreenElement);
-}
-
-// 横屏检测和全屏处理
-let lastOrientation = window.orientation || (window.innerWidth > window.innerHeight ? 90 : 0);
-
-function handleOrientationChange() {
-	// 仅在移动设备上处理
-	if (!isMobileDevice()) return;
-	
-	const isLandscape = window.matchMedia('(orientation: landscape)').matches;
-	
-	if (isLandscape) {
-		// 横屏时自动进入全屏
-		if (!isFullscreen()) {
-			requestFullscreen();
-		}
-		// 隐藏旋转提示
-		const rotateOverlay = document.getElementById('rotateDevice');
-		if (rotateOverlay) {
-			rotateOverlay.style.display = 'none';
-		}
-	} else {
-		// 竖屏时退出全屏并显示旋转提示
-		if (isFullscreen()) {
-			exitFullscreen();
-		}
-	}
-}
-
-// 监听屏幕方向变化（仅移动端）
-if (isMobileDevice()) {
-	window.addEventListener('orientationchange', handleOrientationChange);
-	window.addEventListener('resize', handleOrientationChange);
-	// 页面加载时检查方向
-	handleOrientationChange();
-	console.log('✅ 移动端方向监听已启用');
-}
-
-// "我已旋转设备"按钮点击事件
-const rotateHintBtn = document.getElementById('rotateHint');
-if (rotateHintBtn) {
-	rotateHintBtn.addEventListener('click', () => {
-		const rotateOverlay = document.getElementById('rotateDevice');
-		if (rotateOverlay) {
-			rotateOverlay.style.display = 'none';
-		}
-		// 尝试进入全屏
-		if (window.matchMedia('(orientation: landscape)').matches) {
-			requestFullscreen();
-		}
-	});
-}
-
-// 监听全屏变化（仅移动端）
-if (isMobileDevice()) {
-	document.addEventListener('fullscreenchange', () => {
-		if (!isFullscreen()) {
-			console.log('退出全屏');
-		}
-	});
-}
-
-// 优化触摸事件，防止误触和延迟（仅移动端）
-if (isMobileDevice()) {
-	canvas.style.touchAction = 'none';
-	canvas.addEventListener('touchstart', (e) => {
-		e.preventDefault(); // 防止默认的触摸行为
-	}, { passive: false });
-	console.log('✅ 移动端优化已启用');
-}

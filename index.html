@@ -2,101 +2,34 @@
 <html lang="zh-CN">
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="mobile-web-app-capable" content="yes">
-	<meta name="screen-orientation" content="landscape">
-	<meta name="x5-orientation" content="landscape">
-	<meta name="x5-fullscreen" content="true">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>大嘴鸟 · 字词学习版</title>
 	<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-	<!-- 横屏引导遮罩（仅在移动端竖屏时显示） -->
-	<div id="rotateDevice" class="rotate-device-overlay">
-		<div class="rotate-device-content">
-			<div class="rotate-icon">📱 ➡️ 📱</div>
-			<h2>请旋转设备至横屏</h2>
-			<p>为获得最佳游戏体验，请将设备横向放置</p>
-			<div class="rotate-animation">
-				<svg width="80" height="80" viewBox="0 0 100 100">
-					<rect x="20" y="30" width="60" height="40" rx="5" fill="none" stroke="currentColor" stroke-width="3"/>
-					<circle cx="85" cy="50" r="3" fill="currentColor"/>
-					<path d="M 50 80 Q 50 90, 60 90 L 75 90" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#arrowhead)"/>
-					<defs>
-						<marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-							<polygon points="0 0, 10 3, 0 6" fill="currentColor"/>
-						</marker>
-					</defs>
-				</svg>
-			</div>
-			<button id="rotateHint" class="rotate-hint-btn">我已旋转设备</button>
-		</div>
-	</div>
-
 	<div class="container">
-		<!-- 横屏布局：左侧（标题+统计）、中间游戏区、右侧（按钮） -->
-		<div class="landscape-layout">
-			<!-- 左侧：标题栏和统计栏 -->
-			<aside class="sidebar-left">
-				<header class="header header-landscape">
-					<h1>🦜 <span class="fancy-title">大嘴鸟</span></h1>
-					<p class="subtitle">字词学习版</p>
-				</header>
-				
-				<div class="stats stats-landscape">
-					<div class="stat"><span>分数</span><strong id="score">0</strong></div>
-					<div class="stat"><span>等级</span><strong id="level">1</strong></div>
-					<div class="stat"><span>速度</span><strong id="speed">慢</strong></div>
-					<div class="stat"><span>正确</span><strong id="correct">0</strong></div>
-					<div class="stat"><span>错误</span><strong id="wrong">0</strong></div>
-					<div class="stat"><span>升级进度</span><strong id="progress">0/15</strong></div>
-				</div>
-			</aside>
+		<header class="header">
+			<h1>🦜 <span class="fancy-title">大嘴鸟</span> · 字词学习版</h1>
+		</header>
 
-			<!-- 中间游戏区域 -->
-			<main class="game-area" id="gameAreaLandscape"></main>
+		<section class="toolbar">
+			<div class="stats">
+				<div class="stat"><span>分数</span><strong id="score">0</strong></div>
+				<div class="stat"><span>等级</span><strong id="level">1</strong></div>
+				<div class="stat"><span>速度</span><strong id="speed">慢</strong></div>
+				<div class="stat"><span>正确</span><strong id="correct">0</strong></div>
+				<div class="stat"><span>错误</span><strong id="wrong">0</strong></div>
+				<div class="stat"><span>升级进度</span><strong id="progress">0/15</strong></div>
+			</div>
+			<div class="buttons">
+				<button id="startBtn" class="btn primary">开始</button>
+				<button id="pauseBtn" class="btn" disabled>暂停</button>
+				<button id="resetBtn" class="btn">重置</button>
+				<button id="musicBtn" class="btn" title="音乐开关">🔊</button>
+			</div>
+		</section>
 
-			<!-- 右侧：控制按钮 -->
-			<aside class="sidebar-right">
-				<div class="buttons buttons-landscape">
-					<button id="startBtn" class="btn primary">开始</button>
-					<button id="pauseBtn" class="btn" disabled>暂停</button>
-					<button id="resetBtn" class="btn">重置</button>
-					<button id="musicBtn" class="btn" title="音乐开关">🔊</button>
-				</div>
-			</aside>
-		</div>
-
-		<!-- 竖屏布局（电脑端） -->
-		<div class="portrait-layout">
-			<header class="header header-portrait">
-				<h1>🦜 <span class="fancy-title">大嘴鸟</span> · 字词学习版</h1>
-			</header>
-			
-			<section class="toolbar toolbar-portrait">
-				<div class="stats stats-portrait">
-					<div class="stat"><span>分数</span><strong class="score-clone">0</strong></div>
-					<div class="stat"><span>等级</span><strong class="level-clone">1</strong></div>
-					<div class="stat"><span>速度</span><strong class="speed-clone">慢</strong></div>
-					<div class="stat"><span>正确</span><strong class="correct-clone">0</strong></div>
-					<div class="stat"><span>错误</span><strong class="wrong-clone">0</strong></div>
-					<div class="stat"><span>升级进度</span><strong class="progress-clone">0/15</strong></div>
-				</div>
-				<div class="buttons buttons-portrait">
-					<button class="btn primary btn-start-clone">开始</button>
-					<button class="btn btn-pause-clone" disabled>暂停</button>
-					<button class="btn btn-reset-clone">重置</button>
-					<button class="btn btn-music-clone" title="音乐开关">🔊</button>
-				</div>
-			</section>
-			
-			<!-- 游戏区域 -->
-			<main class="game-area" id="gameAreaPortrait"></main>
-		</div>
-
-		<!-- 共享游戏画布 -->
-		<section class="game-wrap" id="gameWrap">
+		<section class="game-wrap">
 			<canvas id="board" width="960" height="640"></canvas>
 			<div id="overlay" class="overlay">
 				<div class="panel">
