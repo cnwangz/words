@@ -5,7 +5,7 @@
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
 
-// UI - 横屏布局元素
+// UI
 const scoreEl = document.getElementById('score');
 const levelEl = document.getElementById('level');
 const speedEl = document.getElementById('speed');
@@ -23,30 +23,6 @@ const overlayTip = document.getElementById('overlayTip');
 const toast = document.getElementById('toast');
 const bgMusic = document.getElementById('bgMusic');
 const musicBtn = document.getElementById('musicBtn');
-
-// 竖屏布局元素（克隆版）
-const scoreClone = document.querySelector('.score-clone');
-const levelClone = document.querySelector('.level-clone');
-const speedClone = document.querySelector('.speed-clone');
-const correctClone = document.querySelector('.correct-clone');
-const wrongClone = document.querySelector('.wrong-clone');
-const progressClone = document.querySelector('.progress-clone');
-const startBtnClone = document.querySelector('.btn-start-clone');
-const pauseBtnClone = document.querySelector('.btn-pause-clone');
-const resetBtnClone = document.querySelector('.btn-reset-clone');
-const musicBtnClone = document.querySelector('.btn-music-clone');
-
-// 同步更新函数：更新所有显示元素
-function updateAllDisplays(element, cloneElement, value) {
-	if (element) element.textContent = value;
-	if (cloneElement) cloneElement.textContent = value;
-}
-
-// 同步按钮状态
-function syncButtonState(mainBtn, cloneBtn, disabled) {
-	if (mainBtn) mainBtn.disabled = disabled;
-	if (cloneBtn) cloneBtn.disabled = disabled;
-}
 
 // 音乐状态
 let musicEnabled = true;
@@ -110,14 +86,13 @@ function resetGame() {
 }
 
 function updateUI() {
-	// 同步更新横屏和竖屏布局
-	updateAllDisplays(scoreEl, scoreClone, STATE.score);
-	updateAllDisplays(levelEl, levelClone, STATE.level);
-	updateAllDisplays(speedEl, speedClone, LEVELS[STATE.level - 1].name);
-	updateAllDisplays(correctEl, correctClone, STATE.correct);
-	updateAllDisplays(wrongEl, wrongClone, STATE.wrong);
+	scoreEl.textContent = STATE.score;
+	levelEl.textContent = STATE.level;
+	speedEl.textContent = LEVELS[STATE.level - 1].name;
+	correctEl.textContent = STATE.correct;
+	wrongEl.textContent = STATE.wrong;
 	const need = 15; const cur = STATE.correct % need;
-	updateAllDisplays(progressEl, progressClone, `${cur}/15`);
+	progressEl && (progressEl.textContent = `${cur}/15`);
 	wrongRateEl && (wrongRateEl.textContent = `${Math.round(STATE.probWrong*100)}%`);
 }
 
@@ -1350,14 +1325,7 @@ function maybeLevelUp() {
 function onClickCanvas(e) {
 	if (!STATE.running || STATE.paused) return;
 	const rect = canvas.getBoundingClientRect();
-	
-	// 计算缩放比例（Canvas实际显示大小 vs Canvas逻辑大小）
-	const scaleX = canvas.width / rect.width;
-	const scaleY = canvas.height / rect.height;
-	
-	// 根据缩放比例调整坐标
-	const mx = (e.clientX - rect.left) * scaleX;
-	const my = (e.clientY - rect.top) * scaleY;
+	const mx = e.clientX - rect.left; const my = e.clientY - rect.top;
 	
 	// 记录点击位置，用于树木摆动
 	lastClickX = mx;
@@ -1392,8 +1360,7 @@ function startGame() {
 	if (STATE.running) return;
 	STATE.running = true; STATE.paused = false;
 	overlay.classList.add('hidden');
-	syncButtonState(startBtn, startBtnClone, true);
-	syncButtonState(pauseBtn, pauseBtnClone, false);
+	startBtn.disabled = true; pauseBtn.disabled = false;
 	
 	// 播放背景音乐（如果已启用）
 	if (bgMusic && musicEnabled) {
@@ -1415,7 +1382,7 @@ function pauseGame() {
 			bgMusic.pause();
 		}
 		showToast('已暂停 (P)', '#334155');
-		updateAllDisplays(pauseBtn, pauseBtnClone, '继续');
+		pauseBtn.textContent = '继续';
 	} else {
 		startLoops();
 		// 继续播放背景音乐（如果已启用）
@@ -1424,7 +1391,7 @@ function pauseGame() {
 				console.log('背景音乐播放失败:', err);
 			});
 		}
-		updateAllDisplays(pauseBtn, pauseBtnClone, '暂停');
+		pauseBtn.textContent = '暂停';
 		showToast('继续', '#334155');
 	}
 }
@@ -1433,9 +1400,7 @@ function resetGame() {
 	cancelAnimationFrame(animationId);
 	clearInterval(spawnTimer);
 	STATE.running = false; STATE.paused = false;
-	syncButtonState(startBtn, startBtnClone, false);
-	syncButtonState(pauseBtn, pauseBtnClone, true);
-	updateAllDisplays(pauseBtn, pauseBtnClone, '暂停');
+	startBtn.disabled = false; pauseBtn.disabled = true; pauseBtn.textContent = '暂停';
 	bird.target = null; items = [];
 	STATE.score = 0; STATE.level = 1; STATE.correct = 0; STATE.wrong = 0; bird.size = 16; bird.x = 120; bird.y = canvas.height - 120;
 	
@@ -1480,9 +1445,8 @@ function handleKey(e) {
 function toggleMusic() {
 	musicEnabled = !musicEnabled;
 	if (musicEnabled) {
-		updateAllDisplays(musicBtn, musicBtnClone, '🔊');
-		if (musicBtn) musicBtn.title = '关闭音乐';
-		if (musicBtnClone) musicBtnClone.title = '关闭音乐';
+		musicBtn.textContent = '🔊';
+		musicBtn.title = '关闭音乐';
 		// 如果游戏正在运行且未暂停，播放音乐
 		if (STATE.running && !STATE.paused && bgMusic) {
 			bgMusic.play().catch(err => {
@@ -1491,9 +1455,8 @@ function toggleMusic() {
 		}
 		showToast('🔊 音乐已开启', '#16a34a');
 	} else {
-		updateAllDisplays(musicBtn, musicBtnClone, '🔇');
-		if (musicBtn) musicBtn.title = '开启音乐';
-		if (musicBtnClone) musicBtnClone.title = '开启音乐';
+		musicBtn.textContent = '🔇';
+		musicBtn.title = '开启音乐';
 		// 停止音乐
 		if (bgMusic) {
 			bgMusic.pause();
@@ -1511,14 +1474,8 @@ function startLongPress(e) {
 	// 如果是在游戏进行中点击词条，不触发长按
 	if (STATE.running && !STATE.paused) {
 		const rect = canvas.getBoundingClientRect();
-		
-		// 计算缩放比例
-		const scaleX = canvas.width / rect.width;
-		const scaleY = canvas.height / rect.height;
-		
-		// 根据缩放比例调整坐标
-		const mx = (e.clientX - rect.left) * scaleX;
-		const my = (e.clientY - rect.top) * scaleY;
+		const mx = e.clientX - rect.left;
+		const my = e.clientY - rect.top;
 		
 		// 检查是否点击了词条
 		for (const it of items) {
@@ -1619,15 +1576,9 @@ canvas.addEventListener('mousedown', startLongPress);
 canvas.addEventListener('mouseup', cancelLongPress);
 canvas.addEventListener('mouseleave', cancelLongPress);
 
-// 触摸事件处理（移动端）
-let touchStartTime = 0;
-let touchStartPos = null;
-
+// 长按事件（触摸屏）
 canvas.addEventListener('touchstart', (e) => {
 	const touch = e.touches[0];
-	touchStartTime = Date.now();
-	touchStartPos = { x: touch.clientX, y: touch.clientY };
-	
 	const mouseEvent = new MouseEvent('mousedown', {
 		clientX: touch.clientX,
 		clientY: touch.clientY
@@ -1635,29 +1586,7 @@ canvas.addEventListener('touchstart', (e) => {
 	startLongPress(mouseEvent);
 }, { passive: true });
 
-canvas.addEventListener('touchend', (e) => {
-	cancelLongPress();
-	
-	// 如果是快速点击（不是长按），触发点击事件
-	const touchDuration = Date.now() - touchStartTime;
-	if (touchDuration < 500 && touchStartPos) {
-		const touch = e.changedTouches[0];
-		const moveDistance = Math.hypot(touch.clientX - touchStartPos.x, touch.clientY - touchStartPos.y);
-		
-		// 如果移动距离很小，认为是点击
-		if (moveDistance < 10) {
-			const mouseEvent = new MouseEvent('click', {
-				clientX: touch.clientX,
-				clientY: touch.clientY,
-				bubbles: true
-			});
-			onClickCanvas(mouseEvent);
-		}
-	}
-	
-	touchStartPos = null;
-});
-
+canvas.addEventListener('touchend', cancelLongPress);
 canvas.addEventListener('touchcancel', cancelLongPress);
 
 startBtn.addEventListener('click', startGame);
@@ -1666,122 +1595,6 @@ resetBtn.addEventListener('click', resetGame);
 overlayStart.addEventListener('click', startGame);
 musicBtn.addEventListener('click', toggleMusic);
 window.addEventListener('keydown', handleKey);
-
-// 竖屏布局按钮同步事件
-if (startBtnClone) startBtnClone.addEventListener('click', startGame);
-if (pauseBtnClone) pauseBtnClone.addEventListener('click', pauseGame);
-if (resetBtnClone) resetBtnClone.addEventListener('click', resetGame);
-if (musicBtnClone) musicBtnClone.addEventListener('click', toggleMusic);
-
-// 获取旋转设备遮罩元素
-const rotateDeviceOverlay = document.getElementById('rotateDevice');
-
-// 屏幕方向变化检测和画布调整
-function handleOrientationChange() {
-	const isLandscape = window.innerWidth > window.innerHeight;
-	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-	const isPortrait = !isLandscape;
-	
-	// 移动端竖屏：显示旋转提示遮罩
-	if (isMobile && isPortrait && window.innerWidth <= 768) {
-		if (rotateDeviceOverlay) {
-			rotateDeviceOverlay.style.display = 'flex';
-		}
-	} else {
-		// 其他情况：隐藏遮罩
-		if (rotateDeviceOverlay) {
-			rotateDeviceOverlay.style.display = 'none';
-		}
-	}
-	
-	// 横屏模式：调整画布以充分利用空间
-	if (isMobile && isLandscape) {
-		const availableHeight = window.innerHeight - 100; // 减去按钮和边距
-		const maxWidth = availableHeight * 1.5; // 保持16:10的宽高比
-		canvas.style.maxHeight = availableHeight + 'px';
-		canvas.style.width = 'auto';
-		canvas.style.height = 'auto';
-	} else if (!isMobile) {
-		// 桌面端：恢复默认
-		canvas.style.maxHeight = '';
-		canvas.style.width = '';
-		canvas.style.height = '';
-	}
-}
-
-// 监听屏幕方向变化
-window.addEventListener('resize', handleOrientationChange);
-window.addEventListener('orientationchange', handleOrientationChange);
-
-// 页面加载完成后立即检查方向
-if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', handleOrientationChange);
-} else {
-	handleOrientationChange();
-}
-
-// 尝试锁定屏幕方向为横屏（需要用户交互后才能生效）
-let orientationLocked = false;
-function attemptLockOrientation() {
-	if (orientationLocked) return;
-	
-	// 检测是否为移动设备
-	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-	if (!isMobile) return;
-	
-	// 尝试锁定横屏
-	if (screen.orientation && screen.orientation.lock) {
-		screen.orientation.lock('landscape').then(() => {
-			console.log('✅ 屏幕已锁定为横屏模式');
-			orientationLocked = true;
-		}).catch(err => {
-			console.log('⚠️ 无法锁定屏幕方向:', err.message);
-			// 某些浏览器需要全屏模式才能锁定方向
-			if (document.documentElement.requestFullscreen) {
-				console.log('💡 提示：进入全屏模式可能有助于锁定屏幕方向');
-			}
-		});
-	}
-}
-
-// 在多个用户交互事件上尝试锁定方向
-['click', 'touchstart', 'touchend'].forEach(eventType => {
-	document.addEventListener(eventType, attemptLockOrientation, { once: true });
-});
-
-// 点击旋转提示遮罩时也尝试锁定
-if (rotateDeviceOverlay) {
-	rotateDeviceOverlay.addEventListener('click', attemptLockOrientation);
-}
-
-// "我已旋转设备"按钮处理
-const rotateHintBtn = document.getElementById('rotateHint');
-if (rotateHintBtn) {
-	rotateHintBtn.addEventListener('click', function(e) {
-		e.stopPropagation();
-		
-		// 尝试进入全屏模式（可以帮助锁定屏幕方向）
-		const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-		if (isMobile && document.documentElement.requestFullscreen) {
-			document.documentElement.requestFullscreen().then(() => {
-				console.log('✅ 已进入全屏模式');
-				// 全屏后再次尝试锁定方向
-				attemptLockOrientation();
-				// 强制刷新方向检测
-				setTimeout(() => {
-					handleOrientationChange();
-				}, 300);
-			}).catch(err => {
-				console.log('⚠️ 无法进入全屏:', err.message);
-				// 即使不能全屏，也检查是否已经横屏
-				handleOrientationChange();
-			});
-		} else {
-			// 非移动设备或不支持全屏，直接检查方向
-			handleOrientationChange();
-		}
-	});
-}
 
 // ========== 导入/清除词库功能 ==========
 const importBtn = document.getElementById('importBtn');
