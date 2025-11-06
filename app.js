@@ -1340,7 +1340,12 @@ function maybeLevelUp() {
 function onClickCanvas(e) {
 	if (!STATE.running || STATE.paused) return;
 	const rect = canvas.getBoundingClientRect();
-	const mx = e.clientX - rect.left; const my = e.clientY - rect.top;
+	
+	// 考虑canvas的缩放比例，计算准确的坐标
+	const scaleX = canvas.width / rect.width;
+	const scaleY = canvas.height / rect.height;
+	const mx = (e.clientX - rect.left) * scaleX;
+	const my = (e.clientY - rect.top) * scaleY;
 	
 	// 记录点击位置，用于树木摆动
 	lastClickX = mx;
@@ -1517,8 +1522,10 @@ function startLongPress(e) {
 	// 如果是在游戏进行中点击词条，不触发长按
 	if (STATE.running && !STATE.paused) {
 		const rect = canvas.getBoundingClientRect();
-		const mx = e.clientX - rect.left;
-		const my = e.clientY - rect.top;
+		const scaleX = canvas.width / rect.width;
+		const scaleY = canvas.height / rect.height;
+		const mx = (e.clientX - rect.left) * scaleX;
+		const my = (e.clientY - rect.top) * scaleY;
 		
 		// 检查是否点击了词条
 		for (const it of items) {
@@ -1897,3 +1904,148 @@ updateWordBankStatus();
 
 // 初始
 resetGame();
+
+// ========== 动态移动游戏画布到正确的容器 ==========
+function moveGameWrapToCorrectContainer() {
+	const gameWrap = document.getElementById('gameWrap');
+	const landscapeLayout = document.querySelector('.landscape-layout');
+	const portraitLayout = document.querySelector('.portrait-layout');
+	const gameAreaLandscape = document.getElementById('gameAreaLandscape');
+	const gameAreaPortrait = document.getElementById('gameAreaPortrait');
+	
+	if (!gameWrap) return;
+	
+	// 判断当前应该显示哪个布局
+	const isLandscapeVisible = landscapeLayout && window.getComputedStyle(landscapeLayout).display !== 'none';
+	const isPortraitVisible = portraitLayout && window.getComputedStyle(portraitLayout).display !== 'none';
+	
+	if (isLandscapeVisible && gameAreaLandscape && gameWrap.parentElement !== gameAreaLandscape) {
+		// 移动到横屏布局的游戏区
+		gameAreaLandscape.appendChild(gameWrap);
+	} else if (isPortraitVisible && gameAreaPortrait && gameWrap.parentElement !== gameAreaPortrait) {
+		// 移动到竖屏布局的游戏区
+		gameAreaPortrait.appendChild(gameWrap);
+	}
+}
+
+// 页面加载时移动
+moveGameWrapToCorrectContainer();
+
+// 监听窗口大小变化
+window.addEventListener('resize', moveGameWrapToCorrectContainer);
+
+// ========== 移动端全屏功能 ==========
+// 检测是否为移动设备（更严格的判断）
+function isMobileDevice() {
+	// 检查UA
+	const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+	// 检查触摸屏和屏幕尺寸
+	const hasTouchScreen = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+	const smallScreen = window.innerWidth < 1024;
+	
+	return mobileUA && hasTouchScreen && smallScreen;
+}
+
+// 请求全屏
+function requestFullscreen() {
+	const elem = document.documentElement;
+	if (elem.requestFullscreen) {
+		elem.requestFullscreen().catch(err => {
+			console.log('全屏请求失败:', err);
+		});
+	} else if (elem.webkitRequestFullscreen) { // Safari
+		elem.webkitRequestFullscreen();
+	} else if (elem.mozRequestFullScreen) { // Firefox
+		elem.mozRequestFullScreen();
+	} else if (elem.msRequestFullscreen) { // IE/Edge
+		elem.msRequestFullscreen();
+	}
+}
+
+// 退出全屏
+function exitFullscreen() {
+	if (document.exitFullscreen) {
+		document.exitFullscreen();
+	} else if (document.webkitExitFullscreen) {
+		document.webkitExitFullscreen();
+	} else if (document.mozCancelFullScreen) {
+		document.mozCancelFullScreen();
+	} else if (document.msExitFullscreen) {
+		document.msExitFullscreen();
+	}
+}
+
+// 检查是否全屏
+function isFullscreen() {
+	return !!(document.fullscreenElement || document.webkitFullscreenElement || 
+	          document.mozFullScreenElement || document.msFullscreenElement);
+}
+
+// 横屏检测和全屏处理
+let lastOrientation = window.orientation || (window.innerWidth > window.innerHeight ? 90 : 0);
+
+function handleOrientationChange() {
+	// 仅在移动设备上处理
+	if (!isMobileDevice()) return;
+	
+	const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+	
+	if (isLandscape) {
+		// 横屏时自动进入全屏
+		if (!isFullscreen()) {
+			requestFullscreen();
+		}
+		// 隐藏旋转提示
+		const rotateOverlay = document.getElementById('rotateDevice');
+		if (rotateOverlay) {
+			rotateOverlay.style.display = 'none';
+		}
+	} else {
+		// 竖屏时退出全屏并显示旋转提示
+		if (isFullscreen()) {
+			exitFullscreen();
+		}
+	}
+}
+
+// 监听屏幕方向变化（仅移动端）
+if (isMobileDevice()) {
+	window.addEventListener('orientationchange', handleOrientationChange);
+	window.addEventListener('resize', handleOrientationChange);
+	// 页面加载时检查方向
+	handleOrientationChange();
+	console.log('✅ 移动端方向监听已启用');
+}
+
+// "我已旋转设备"按钮点击事件
+const rotateHintBtn = document.getElementById('rotateHint');
+if (rotateHintBtn) {
+	rotateHintBtn.addEventListener('click', () => {
+		const rotateOverlay = document.getElementById('rotateDevice');
+		if (rotateOverlay) {
+			rotateOverlay.style.display = 'none';
+		}
+		// 尝试进入全屏
+		if (window.matchMedia('(orientation: landscape)').matches) {
+			requestFullscreen();
+		}
+	});
+}
+
+// 监听全屏变化（仅移动端）
+if (isMobileDevice()) {
+	document.addEventListener('fullscreenchange', () => {
+		if (!isFullscreen()) {
+			console.log('退出全屏');
+		}
+	});
+}
+
+// 优化触摸事件，防止误触和延迟（仅移动端）
+if (isMobileDevice()) {
+	canvas.style.touchAction = 'none';
+	canvas.addEventListener('touchstart', (e) => {
+		e.preventDefault(); // 防止默认的触摸行为
+	}, { passive: false });
+	console.log('✅ 移动端优化已启用');
+}

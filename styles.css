@@ -85,6 +85,7 @@ body{font-family:'Microsoft YaHei','SimHei',Arial,sans-serif;background:linear-g
 
 .toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:20px;background:#f7f8fa}
 .toolbar-portrait{display:flex!important;justify-content:space-between;padding:20px;gap:16px;background:#f7f8fa;flex-wrap:wrap;align-items:center}
+.portrait-layout .game-area{display:flex!important;flex:1;flex-direction:column;background:#f0f4f8;position:relative;min-height:500px}
 .toolbar-bottom{display:none}
 .stats{display:flex;flex-direction:row;gap:12px;flex:1;flex-wrap:wrap}
 .stats-portrait{display:flex!important;flex-direction:row;gap:12px;flex:1;flex-wrap:nowrap;align-items:center}
@@ -100,7 +101,7 @@ body{font-family:'Microsoft YaHei','SimHei',Arial,sans-serif;background:linear-g
 .btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.12)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .btn.primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff}
-.game-wrap{position:relative;padding:12px;flex:1;display:flex;align-items:center;justify-content:center}
+.game-wrap{position:relative;padding:12px;flex:1;display:flex;align-items:center;justify-content:center;width:100%;height:100%}
 #board{display:block;background:#e6f2ff;border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.25);max-width:100%;max-height:100%;touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none}
 .overlay{position:absolute;inset:16px;background:rgba(0,0,0,.6);display:flex;justify-content:center;align-items:center;border-radius:10px}
 .overlay.hidden{display:none}
@@ -129,8 +130,8 @@ body{font-family:'Microsoft YaHei','SimHei',Arial,sans-serif;background:linear-g
 
 /* 移动端横屏优化 - 三栏布局 */
 @media (max-width: 1024px) and (orientation: landscape) {
-	body{padding:5px;align-items:stretch;min-height:100vh}
-	.container{border-radius:8px;height:100vh;max-height:100vh;display:flex;flex-direction:column}
+	body{padding:0;margin:0;align-items:stretch;min-height:100vh;height:100vh;overflow:hidden}
+	.container{border-radius:0;height:100vh;max-height:100vh;display:flex;flex-direction:column;overflow:hidden}
 	
 	/* 启用三栏布局：左栏110px 中间自适应 右栏75px */
 	.landscape-layout{display:grid!important;min-height:0;flex:1;grid-template-columns:110px 1fr 75px;gap:0}
@@ -179,7 +180,7 @@ body{font-family:'Microsoft YaHei','SimHei',Arial,sans-serif;background:linear-g
 	.stat strong{font-size:12px;font-weight:700;color:#333}
 	
 	/* 游戏区布满中部 */
-	.game-wrap{padding:5px;flex:1;display:flex;align-items:center;justify-content:center}
+	.game-wrap{padding:5px;flex:1;display:flex;align-items:center;justify-content:center;width:100%;height:100%}
 	.game-area{
 		display:flex!important;
 		flex:1;
@@ -187,6 +188,8 @@ body{font-family:'Microsoft YaHei','SimHei',Arial,sans-serif;background:linear-g
 		background:#e6f2ff;
 		flex-direction:column;
 		position:relative;
+		width:100%;
+		height:100%;
 	}
 	#board{width:100%;height:100%;object-fit:contain;border-radius:6px}
 	
