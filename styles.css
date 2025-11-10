@@ -6,17 +6,18 @@ body{font-family:'Microsoft YaHei','SimHei',Arial,sans-serif;background:linear-g
 .fancy-title{font-size:36px;font-weight:900;background:linear-gradient(135deg,#FFD700 0%,#FF6B35 50%,#FF1744 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:0 4px 12px rgba(255,107,53,.5);display:inline-block;position:relative;animation:glow 2s ease-in-out infinite alternate}
 @keyframes glow{0%{filter:drop-shadow(0 0 5px rgba(255,215,0,.6)) drop-shadow(0 0 10px rgba(255,107,53,.4))}100%{filter:drop-shadow(0 0 15px rgba(255,215,0,.8)) drop-shadow(0 0 20px rgba(255,107,53,.6))}}
 .subtitle{opacity:.95}
-.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px;background:#f7f8fa}
-.stats{display:flex;gap:12px;flex-wrap:wrap}
-.stat{background:#fff;border-radius:10px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;gap:8px;align-items:baseline}
-.stat span{color:#666;font-size:12px}
-.stat strong{font-size:18px;color:#333}
-.buttons{display:flex;gap:8px}
+/* 左侧统计信息（竖排，浮于画布上方） */
+.stats-left{position:absolute;left:16px;top:16px;z-index:10;display:flex;flex-direction:column;gap:8px}
+.stat{background:rgba(255,255,255,0.95);border-radius:10px;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:4px;align-items:center;min-width:80px;backdrop-filter:blur(4px)}
+.stat span{color:#666;font-size:12px;writing-mode:horizontal-tb;text-align:center}
+.stat strong{font-size:18px;color:#333;text-align:center}
+/* 右侧按钮（竖排，底部对齐到绿色地平线） */
+.buttons-right{position:absolute;right:16px;bottom:136px;z-index:10;display:flex;flex-direction:column;gap:8px}
 .btn{border:none;border-radius:10px;padding:10px 16px;background:#e9ecef;color:#333;cursor:pointer;transition:.2s;font-weight:600}
 .btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.12)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .btn.primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff}
-.game-wrap{position:relative;padding:16px}
+.game-wrap{position:relative;padding:16px;display:flex;justify-content:center;align-items:flex-start}
 #board{display:block;margin:0 auto;background:#e6f2ff;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.25);max-width:100%;height:auto;touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none}
 .overlay{position:absolute;inset:16px;background:rgba(0,0,0,.6);display:flex;justify-content:center;align-items:center;border-radius:10px}
 .overlay.hidden{display:none}
@@ -50,13 +51,12 @@ body{font-family:'Microsoft YaHei','SimHei',Arial,sans-serif;background:linear-g
 	.header{padding:16px 12px 6px}
 	.header h1{font-size:20px}
 	.fancy-title{font-size:26px}
-	.toolbar{padding:12px;gap:8px}
-	.stats{gap:6px;width:100%}
-	.stat{padding:6px 10px;font-size:11px;flex:1;min-width:70px;justify-content:center;flex-direction:column;align-items:center;gap:2px}
+	.stats-left{left:8px;top:8px;gap:6px}
+	.stat{padding:6px 10px;font-size:11px;min-width:60px;gap:2px}
 	.stat span{font-size:10px}
 	.stat strong{font-size:14px}
-	.buttons{width:100%;gap:6px}
-	.btn{padding:8px 12px;font-size:13px;flex:1}
+	.buttons-right{right:8px;bottom:136px;gap:6px}
+	.btn{padding:8px 12px;font-size:13px;min-width:70px}
 	.game-wrap{padding:10px}
 	#board{border-radius:8px;width:100%;height:auto}
 	.panel{padding:20px;max-width:90%}
@@ -81,13 +81,12 @@ body{font-family:'Microsoft YaHei','SimHei',Arial,sans-serif;background:linear-g
 	.header{padding:12px 8px 4px}
 	.header h1{font-size:16px}
 	.fancy-title{font-size:22px}
-	.toolbar{padding:8px}
-	.stats{flex-wrap:wrap}
-	.stat{padding:5px 8px;min-width:60px}
+	.stats-left{left:4px;top:4px;gap:4px}
+	.stat{padding:5px 8px;min-width:50px}
 	.stat span{font-size:9px}
 	.stat strong{font-size:12px}
-	.buttons{flex-wrap:wrap}
-	.btn{padding:6px 10px;font-size:12px}
+	.buttons-right{right:4px;bottom:136px;gap:4px}
+	.btn{padding:6px 10px;font-size:12px;min-width:60px}
 	.game-wrap{padding:6px}
 	.panel{padding:16px}
 	.panel h2{font-size:16px}

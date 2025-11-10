@@ -108,7 +108,6 @@ const clouds = [
 // 树木数据（x位置、摆动角度、生长进度）
 const trees = [
 	{ x: 100, swayAngle: 0, targetSway: 0, growthStage: 0 },
-	{ x: 300, swayAngle: 0, targetSway: 0, growthStage: 0 },
 	{ x: 700, swayAngle: 0, targetSway: 0, growthStage: 0 },
 	{ x: 850, swayAngle: 0, targetSway: 0, growthStage: 0 }
 ];
@@ -248,14 +247,14 @@ function drawBackground() {
 	drawGroundDecorations();
 }
 
-// 绘制草地装饰（小兔子、蘑菇、小花等）
+// 绘制草地装饰（乌龟、小兔子、蘑菇、小花等）
 function drawGroundDecorations() {
 	const groundY = canvas.height - 120;
 	
-	// 小兔子1（左边）
-	drawRabbit(150, groundY - 5, 0.8);
+	// 乌龟（左边，向右爬行）
+	drawTurtle(150, groundY, 0.8);
 	
-	// 小兔子2（右边，面向左）
+	// 小兔子（右边，面向左）
 	drawRabbit(canvas.width - 180, groundY - 5, 0.7, true);
 	
 	// 蘑菇
@@ -268,6 +267,117 @@ function drawGroundDecorations() {
 	drawFlower(520, groundY - 5, '#9c27b0', 7);
 	drawFlower(680, groundY - 5, '#ff6b6b', 9);
 	drawFlower(850, groundY - 5, '#ffa726', 8);
+}
+
+// 绘制乌龟（向右爬行）
+function drawTurtle(x, y, scale = 1) {
+	ctx.save();
+	ctx.translate(x, y);
+	ctx.scale(scale, scale);
+	
+	// 乌龟壳（椭圆形，绿色）
+	ctx.fillStyle = '#4caf50';
+	ctx.beginPath();
+	ctx.ellipse(0, 0, 20, 15, 0, 0, Math.PI * 2);
+	ctx.fill();
+	
+	// 乌龟壳纹理（六边形图案）
+	ctx.strokeStyle = '#2e7d32';
+	ctx.lineWidth = 1.5;
+	// 中央六边形
+	ctx.beginPath();
+	for (let i = 0; i < 6; i++) {
+		const angle = (i / 6) * Math.PI * 2 - Math.PI / 2;
+		const px = Math.cos(angle) * 8;
+		const py = Math.sin(angle) * 8;
+		if (i === 0) ctx.moveTo(px, py);
+		else ctx.lineTo(px, py);
+	}
+	ctx.closePath();
+	ctx.stroke();
+	
+	// 周围小六边形
+	const hexPositions = [
+		[-12, -8], [12, -8], [-12, 8], [12, 8], [0, -12], [0, 12]
+	];
+	for (const [hx, hy] of hexPositions) {
+		ctx.beginPath();
+		for (let i = 0; i < 6; i++) {
+			const angle = (i / 6) * Math.PI * 2 - Math.PI / 2;
+			const px = hx + Math.cos(angle) * 4;
+			const py = hy + Math.sin(angle) * 4;
+			if (i === 0) ctx.moveTo(px, py);
+			else ctx.lineTo(px, py);
+		}
+		ctx.closePath();
+		ctx.stroke();
+	}
+	
+	// 乌龟脖子（向右延伸，长脖子）
+	ctx.fillStyle = '#66bb6a';
+	ctx.beginPath();
+	ctx.ellipse(18, -2, 12, 5, 0, 0, Math.PI * 2);
+	ctx.fill();
+	
+	// 乌龟头部（向右，在脖子末端）
+	ctx.beginPath();
+	ctx.ellipse(28, -3, 8, 6, 0, 0, Math.PI * 2);
+	ctx.fill();
+	
+	// 乌龟眼睛（右眼）
+	ctx.fillStyle = '#212121';
+	ctx.beginPath();
+	ctx.arc(32, -4, 2, 0, Math.PI * 2);
+	ctx.fill();
+	ctx.fillStyle = '#fff';
+	ctx.beginPath();
+	ctx.arc(32.5, -4.5, 0.8, 0, Math.PI * 2);
+	ctx.fill();
+	
+	// 乌龟嘴巴（向右）
+	ctx.strokeStyle = '#212121';
+	ctx.lineWidth = 1.5;
+	ctx.beginPath();
+	ctx.moveTo(35, -3);
+	ctx.lineTo(37, -2);
+	ctx.stroke();
+	
+	// 乌龟前腿（右前腿）
+	ctx.fillStyle = '#66bb6a';
+	ctx.beginPath();
+	ctx.ellipse(15, 8, 5, 8, 0.3, 0, Math.PI * 2);
+	ctx.fill();
+	// 左前腿
+	ctx.beginPath();
+	ctx.ellipse(5, 8, 5, 8, -0.3, 0, Math.PI * 2);
+	ctx.fill();
+	
+	// 乌龟后腿（右后腿）
+	ctx.beginPath();
+	ctx.ellipse(10, 12, 5, 7, 0.2, 0, Math.PI * 2);
+	ctx.fill();
+	// 左后腿
+	ctx.beginPath();
+	ctx.ellipse(-10, 12, 5, 7, -0.2, 0, Math.PI * 2);
+	ctx.fill();
+	
+	// 乌龟尾巴（向右后方）
+	ctx.fillStyle = '#2e7d32';
+	ctx.beginPath();
+	ctx.moveTo(-18, 5);
+	ctx.lineTo(-22, 8);
+	ctx.lineTo(-20, 10);
+	ctx.closePath();
+	ctx.fill();
+	
+	// 乌龟壳边缘高光
+	ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+	ctx.lineWidth = 2;
+	ctx.beginPath();
+	ctx.ellipse(0, -12, 18, 12, 0, 0, Math.PI * 2);
+	ctx.stroke();
+	
+	ctx.restore();
 }
 
 // 绘制小兔子
@@ -911,25 +1021,582 @@ function drawItems() {
 		ctx.lineWidth = 3;
 		drawShape(ctx, it.x, it.y, it.w, it.h, shape, true);
 		
-		// 文本（自适应字号）
+		// 绘制卡通图案（在文字上方）
+		const patternType = it.patternType || 'apple';
+		drawCartoonPattern(ctx, it.x, it.y - 12, patternType, it.w * 0.6);
+		
+		// 文本（在图案下方，自适应字号，调大1/3）
 		ctx.fillStyle = '#222';
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
-		let fs = 18;
+		let fs = Math.round(16 * 4 / 3); // 调大1/3，约21px
 		const maxW = it.w - 20;
 		ctx.font = `bold ${fs}px "Microsoft YaHei", SimHei, Arial`;
-		while (ctx.measureText(it.text).width > maxW && fs > 10) {
+		while (ctx.measureText(it.text).width > maxW && fs > 13) {
 			fs -= 1;
 			ctx.font = `bold ${fs}px "Microsoft YaHei", SimHei, Arial`;
 		}
 		
 		// 文字描边效果
-		ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-		ctx.lineWidth = 3;
-		ctx.strokeText(it.text, it.x, it.y);
-		ctx.fillText(it.text, it.x, it.y);
+		ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+		ctx.lineWidth = 2;
+		ctx.strokeText(it.text, it.x, it.y + 8);
+		ctx.fillText(it.text, it.x, it.y + 8);
 		ctx.restore();
 	}
+}
+
+// 绘制卡通图案
+function drawCartoonPattern(ctx, x, y, patternType, size) {
+	ctx.save();
+	ctx.translate(x, y);
+	
+	const scale = size / 40; // 基础尺寸为40，根据传入size缩放
+	
+	switch(patternType) {
+		// 水果类
+		case 'apple':
+			// 苹果身体
+			ctx.fillStyle = '#ff4444';
+			ctx.beginPath();
+			ctx.ellipse(0, 0, 12 * scale, 15 * scale, 0, 0, Math.PI * 2);
+			ctx.fill();
+			// 苹果叶子
+			ctx.fillStyle = '#4caf50';
+			ctx.beginPath();
+			ctx.ellipse(0, -15 * scale, 4 * scale, 6 * scale, -0.3, 0, Math.PI * 2);
+			ctx.fill();
+			// 高光
+			ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+			ctx.beginPath();
+			ctx.arc(-5 * scale, -5 * scale, 4 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			break;
+			
+		case 'orange':
+			// 橙子身体
+			ctx.fillStyle = '#ff9800';
+			ctx.beginPath();
+			ctx.arc(0, 0, 14 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 橙子纹理
+			ctx.strokeStyle = 'rgba(255, 152, 0, 0.5)';
+			ctx.lineWidth = 1;
+			for (let i = 0; i < 6; i++) {
+				const angle = (i / 6) * Math.PI * 2;
+				ctx.beginPath();
+				ctx.moveTo(0, 0);
+				ctx.lineTo(Math.cos(angle) * 14 * scale, Math.sin(angle) * 14 * scale);
+				ctx.stroke();
+			}
+			// 高光
+			ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+			ctx.beginPath();
+			ctx.arc(-6 * scale, -6 * scale, 5 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			break;
+			
+		case 'strawberry':
+			// 草莓身体
+			ctx.fillStyle = '#f44336';
+			ctx.beginPath();
+			ctx.moveTo(0, 10 * scale);
+			ctx.quadraticCurveTo(-8 * scale, -5 * scale, 0, -12 * scale);
+			ctx.quadraticCurveTo(8 * scale, -5 * scale, 0, 10 * scale);
+			ctx.closePath();
+			ctx.fill();
+			// 草莓叶子
+			ctx.fillStyle = '#4caf50';
+			ctx.beginPath();
+			ctx.arc(-6 * scale, -12 * scale, 3 * scale, 0, Math.PI * 2);
+			ctx.arc(0, -15 * scale, 3 * scale, 0, Math.PI * 2);
+			ctx.arc(6 * scale, -12 * scale, 3 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 草莓籽
+			ctx.fillStyle = '#ffeb3b';
+			for (let i = 0; i < 8; i++) {
+				const angle = (i / 8) * Math.PI * 2;
+				const dist = 6 + (i % 2) * 2;
+				ctx.beginPath();
+				ctx.arc(Math.cos(angle) * dist * scale, Math.sin(angle) * dist * scale, 1.5 * scale, 0, Math.PI * 2);
+				ctx.fill();
+			}
+			break;
+			
+		case 'banana':
+			// 香蕉身体
+			ctx.fillStyle = '#ffeb3b';
+			ctx.beginPath();
+			ctx.moveTo(-8 * scale, 8 * scale);
+			ctx.quadraticCurveTo(-10 * scale, -5 * scale, -5 * scale, -10 * scale);
+			ctx.quadraticCurveTo(0, -12 * scale, 5 * scale, -8 * scale);
+			ctx.quadraticCurveTo(8 * scale, 0, 8 * scale, 8 * scale);
+			ctx.closePath();
+			ctx.fill();
+			// 香蕉纹理
+			ctx.strokeStyle = 'rgba(255, 193, 7, 0.6)';
+			ctx.lineWidth = 1;
+			for (let i = 0; i < 3; i++) {
+				ctx.beginPath();
+				ctx.moveTo(-5 * scale + i * 5 * scale, -8 * scale);
+				ctx.lineTo(-3 * scale + i * 3 * scale, 6 * scale);
+				ctx.stroke();
+			}
+			break;
+			
+		case 'grape':
+			// 葡萄串
+			ctx.fillStyle = '#9c27b0';
+			for (let row = 0; row < 3; row++) {
+				const count = row === 0 ? 2 : row === 1 ? 3 : 2;
+				for (let i = 0; i < count; i++) {
+					const offsetX = (i - (count - 1) / 2) * 6 * scale;
+					const offsetY = (row - 1) * 6 * scale;
+					ctx.beginPath();
+					ctx.arc(offsetX, offsetY, 4 * scale, 0, Math.PI * 2);
+					ctx.fill();
+					// 高光
+					ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+					ctx.beginPath();
+					ctx.arc(offsetX - 1.5 * scale, offsetY - 1.5 * scale, 1.5 * scale, 0, Math.PI * 2);
+					ctx.fill();
+					ctx.fillStyle = '#9c27b0';
+				}
+			}
+			// 葡萄藤
+			ctx.strokeStyle = '#4caf50';
+			ctx.lineWidth = 2;
+			ctx.beginPath();
+			ctx.moveTo(0, -10 * scale);
+			ctx.lineTo(0, -14 * scale);
+			ctx.stroke();
+			break;
+			
+		case 'cherry':
+			// 樱桃1
+			ctx.fillStyle = '#e91e63';
+			ctx.beginPath();
+			ctx.arc(-4 * scale, 2 * scale, 5 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 樱桃2
+			ctx.beginPath();
+			ctx.arc(4 * scale, 2 * scale, 5 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 高光
+			ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+			ctx.beginPath();
+			ctx.arc(-5 * scale, 1 * scale, 2 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(3 * scale, 1 * scale, 2 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 樱桃梗
+			ctx.strokeStyle = '#4caf50';
+			ctx.lineWidth = 2;
+			ctx.beginPath();
+			ctx.moveTo(-4 * scale, -3 * scale);
+			ctx.lineTo(0, -8 * scale);
+			ctx.lineTo(4 * scale, -3 * scale);
+			ctx.stroke();
+			break;
+			
+		case 'watermelon':
+			// 西瓜身体
+			ctx.fillStyle = '#4caf50';
+			ctx.beginPath();
+			ctx.ellipse(0, 0, 12 * scale, 8 * scale, 0, 0, Math.PI * 2);
+			ctx.fill();
+			// 西瓜条纹
+			ctx.strokeStyle = '#2e7d32';
+			ctx.lineWidth = 2;
+			for (let i = -1; i <= 1; i++) {
+				ctx.beginPath();
+				ctx.moveTo(-12 * scale, i * 4 * scale);
+				ctx.lineTo(12 * scale, i * 4 * scale);
+				ctx.stroke();
+			}
+			// 西瓜果肉（内部）
+			ctx.fillStyle = '#ff5252';
+			ctx.beginPath();
+			ctx.ellipse(0, 0, 8 * scale, 5 * scale, 0, 0, Math.PI * 2);
+			ctx.fill();
+			// 西瓜籽
+			ctx.fillStyle = '#212121';
+			ctx.beginPath();
+			ctx.arc(2 * scale, 0, 1 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(-2 * scale, 0, 1 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			break;
+			
+		case 'pineapple':
+			// 菠萝身体
+			ctx.fillStyle = '#ffc107';
+			ctx.beginPath();
+			ctx.ellipse(0, 0, 10 * scale, 14 * scale, 0, 0, Math.PI * 2);
+			ctx.fill();
+			// 菠萝纹理
+			ctx.strokeStyle = '#ff8f00';
+			ctx.lineWidth = 1.5;
+			for (let i = 0; i < 6; i++) {
+				const angle = (i / 6) * Math.PI * 2;
+				ctx.beginPath();
+				ctx.moveTo(0, -14 * scale);
+				ctx.lineTo(Math.cos(angle) * 10 * scale, Math.sin(angle) * 10 * scale);
+				ctx.stroke();
+			}
+			// 菠萝叶子
+			ctx.fillStyle = '#4caf50';
+			for (let i = 0; i < 5; i++) {
+				const angle = (i / 5) * Math.PI * 2 - Math.PI / 2;
+				ctx.beginPath();
+				ctx.moveTo(0, -14 * scale);
+				ctx.lineTo(Math.cos(angle) * 6 * scale, -14 * scale + Math.sin(angle) * 8 * scale);
+				ctx.lineTo(Math.cos(angle) * 3 * scale, -14 * scale + Math.sin(angle) * 4 * scale);
+				ctx.closePath();
+				ctx.fill();
+			}
+			break;
+			
+		case 'peach':
+			// 桃子身体
+			ctx.fillStyle = '#ffb3ba';
+			ctx.beginPath();
+			ctx.ellipse(0, 0, 12 * scale, 14 * scale, 0, 0, Math.PI * 2);
+			ctx.fill();
+			// 桃子高光
+			ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+			ctx.beginPath();
+			ctx.arc(-4 * scale, -4 * scale, 5 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 桃子叶子
+			ctx.fillStyle = '#4caf50';
+			ctx.beginPath();
+			ctx.ellipse(0, -14 * scale, 3 * scale, 5 * scale, -0.2, 0, Math.PI * 2);
+			ctx.fill();
+			break;
+			
+		// 昆虫类
+		case 'butterfly':
+			// 蝴蝶身体
+			ctx.fillStyle = '#795548';
+			ctx.beginPath();
+			ctx.ellipse(0, 0, 2 * scale, 8 * scale, 0, 0, Math.PI * 2);
+			ctx.fill();
+			// 上翅膀
+			ctx.fillStyle = '#ff9800';
+			ctx.beginPath();
+			ctx.ellipse(-6 * scale, -4 * scale, 6 * scale, 5 * scale, -0.3, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.ellipse(6 * scale, -4 * scale, 6 * scale, 5 * scale, 0.3, 0, Math.PI * 2);
+			ctx.fill();
+			// 下翅膀
+			ctx.fillStyle = '#ffc107';
+			ctx.beginPath();
+			ctx.ellipse(-5 * scale, 2 * scale, 5 * scale, 4 * scale, 0.2, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.ellipse(5 * scale, 2 * scale, 5 * scale, 4 * scale, -0.2, 0, Math.PI * 2);
+			ctx.fill();
+			// 翅膀斑点
+			ctx.fillStyle = '#212121';
+			ctx.beginPath();
+			ctx.arc(-6 * scale, -4 * scale, 2 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(6 * scale, -4 * scale, 2 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			break;
+			
+		case 'bee':
+			// 蜜蜂身体
+			ctx.fillStyle = '#ffc107';
+			ctx.beginPath();
+			ctx.ellipse(0, 0, 6 * scale, 4 * scale, 0, 0, Math.PI * 2);
+			ctx.fill();
+			// 蜜蜂条纹
+			ctx.fillStyle = '#212121';
+			ctx.fillRect(-6 * scale, -2 * scale, 12 * scale, 1.5 * scale);
+			ctx.fillRect(-6 * scale, 0.5 * scale, 12 * scale, 1.5 * scale);
+			// 蜜蜂翅膀
+			ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+			ctx.beginPath();
+			ctx.ellipse(-4 * scale, -5 * scale, 3 * scale, 4 * scale, -0.3, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.ellipse(4 * scale, -5 * scale, 3 * scale, 4 * scale, 0.3, 0, Math.PI * 2);
+			ctx.fill();
+			// 蜜蜂眼睛
+			ctx.fillStyle = '#212121';
+			ctx.beginPath();
+			ctx.arc(-2 * scale, -1 * scale, 1.5 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(2 * scale, -1 * scale, 1.5 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 蜜蜂触角
+			ctx.strokeStyle = '#212121';
+			ctx.lineWidth = 1;
+			ctx.beginPath();
+			ctx.moveTo(-3 * scale, -4 * scale);
+			ctx.lineTo(-4 * scale, -6 * scale);
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(3 * scale, -4 * scale);
+			ctx.lineTo(4 * scale, -6 * scale);
+			ctx.stroke();
+			ctx.fillStyle = '#212121';
+			ctx.beginPath();
+			ctx.arc(-4 * scale, -6 * scale, 1 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(4 * scale, -6 * scale, 1 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			break;
+			
+		case 'ladybug':
+			// 瓢虫身体
+			ctx.fillStyle = '#f44336';
+			ctx.beginPath();
+			ctx.ellipse(0, 0, 8 * scale, 6 * scale, 0, 0, Math.PI * 2);
+			ctx.fill();
+			// 瓢虫头部
+			ctx.fillStyle = '#212121';
+			ctx.beginPath();
+			ctx.arc(0, -6 * scale, 4 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 瓢虫斑点
+			ctx.fillStyle = '#212121';
+			ctx.beginPath();
+			ctx.arc(-3 * scale, -1 * scale, 1.5 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(3 * scale, -1 * scale, 1.5 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(0, 2 * scale, 1.5 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 瓢虫眼睛
+			ctx.fillStyle = '#fff';
+			ctx.beginPath();
+			ctx.arc(-2 * scale, -6 * scale, 1 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(2 * scale, -6 * scale, 1 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			break;
+			
+		case 'dragonfly':
+			// 蜻蜓身体
+			ctx.fillStyle = '#00bcd4';
+			ctx.beginPath();
+			ctx.ellipse(0, 0, 1.5 * scale, 10 * scale, 0, 0, Math.PI * 2);
+			ctx.fill();
+			// 蜻蜓翅膀
+			ctx.fillStyle = 'rgba(0, 188, 212, 0.3)';
+			ctx.strokeStyle = '#00bcd4';
+			ctx.lineWidth = 1.5;
+			// 前翅
+			ctx.beginPath();
+			ctx.ellipse(-4 * scale, -3 * scale, 5 * scale, 2.5 * scale, -0.2, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.ellipse(4 * scale, -3 * scale, 5 * scale, 2.5 * scale, 0.2, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.stroke();
+			// 后翅
+			ctx.beginPath();
+			ctx.ellipse(-3 * scale, 1 * scale, 4 * scale, 2 * scale, 0.2, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.ellipse(3 * scale, 1 * scale, 4 * scale, 2 * scale, -0.2, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.stroke();
+			// 蜻蜓眼睛
+			ctx.fillStyle = '#212121';
+			ctx.beginPath();
+			ctx.arc(-2 * scale, -8 * scale, 2 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(2 * scale, -8 * scale, 2 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			break;
+			
+		// 鸟类
+		case 'bird':
+			// 小鸟身体
+			ctx.fillStyle = '#ff9800';
+			ctx.beginPath();
+			ctx.ellipse(0, 0, 6 * scale, 4 * scale, 0, 0, Math.PI * 2);
+			ctx.fill();
+			// 小鸟头部
+			ctx.beginPath();
+			ctx.arc(-4 * scale, -2 * scale, 3 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 小鸟翅膀
+			ctx.fillStyle = '#ff6f00';
+			ctx.beginPath();
+			ctx.ellipse(2 * scale, 0, 4 * scale, 3 * scale, 0.3, 0, Math.PI * 2);
+			ctx.fill();
+			// 小鸟眼睛
+			ctx.fillStyle = '#212121';
+			ctx.beginPath();
+			ctx.arc(-5 * scale, -2 * scale, 1 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 小鸟嘴巴
+			ctx.fillStyle = '#ff6f00';
+			ctx.beginPath();
+			ctx.moveTo(-7 * scale, -2 * scale);
+			ctx.lineTo(-9 * scale, -1 * scale);
+			ctx.lineTo(-7 * scale, 0);
+			ctx.closePath();
+			ctx.fill();
+			break;
+			
+		case 'parrot':
+			// 鹦鹉身体
+			ctx.fillStyle = '#4caf50';
+			ctx.beginPath();
+			ctx.ellipse(0, 0, 7 * scale, 5 * scale, 0, 0, Math.PI * 2);
+			ctx.fill();
+			// 鹦鹉头部
+			ctx.fillStyle = '#ffeb3b';
+			ctx.beginPath();
+			ctx.arc(-5 * scale, -3 * scale, 4 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 鹦鹉翅膀
+			ctx.fillStyle = '#2e7d32';
+			ctx.beginPath();
+			ctx.ellipse(3 * scale, 0, 5 * scale, 4 * scale, 0.2, 0, Math.PI * 2);
+			ctx.fill();
+			// 鹦鹉尾巴
+			ctx.beginPath();
+			ctx.moveTo(7 * scale, 0);
+			ctx.lineTo(10 * scale, -3 * scale);
+			ctx.lineTo(10 * scale, 3 * scale);
+			ctx.closePath();
+			ctx.fill();
+			// 鹦鹉眼睛
+			ctx.fillStyle = '#212121';
+			ctx.beginPath();
+			ctx.arc(-6 * scale, -3 * scale, 1.5 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 鹦鹉嘴巴
+			ctx.fillStyle = '#ff6f00';
+			ctx.beginPath();
+			ctx.moveTo(-9 * scale, -3 * scale);
+			ctx.lineTo(-11 * scale, -2 * scale);
+			ctx.lineTo(-9 * scale, -1 * scale);
+			ctx.closePath();
+			ctx.fill();
+			break;
+			
+		case 'eagle':
+			// 老鹰身体
+			ctx.fillStyle = '#795548';
+			ctx.beginPath();
+			ctx.ellipse(0, 0, 8 * scale, 5 * scale, 0, 0, Math.PI * 2);
+			ctx.fill();
+			// 老鹰头部
+			ctx.fillStyle = '#fff';
+			ctx.beginPath();
+			ctx.arc(-6 * scale, -3 * scale, 3 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 老鹰翅膀
+			ctx.fillStyle = '#5d4037';
+			ctx.beginPath();
+			ctx.ellipse(3 * scale, -2 * scale, 6 * scale, 4 * scale, -0.2, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.ellipse(3 * scale, 2 * scale, 6 * scale, 4 * scale, 0.2, 0, Math.PI * 2);
+			ctx.fill();
+			// 老鹰眼睛
+			ctx.fillStyle = '#ffc107';
+			ctx.beginPath();
+			ctx.arc(-7 * scale, -3 * scale, 1.5 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.fillStyle = '#212121';
+			ctx.beginPath();
+			ctx.arc(-7 * scale, -3 * scale, 0.8 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 老鹰嘴巴
+			ctx.fillStyle = '#ff6f00';
+			ctx.beginPath();
+			ctx.moveTo(-9 * scale, -3 * scale);
+			ctx.lineTo(-11 * scale, -2 * scale);
+			ctx.lineTo(-9 * scale, -1 * scale);
+			ctx.closePath();
+			ctx.fill();
+			break;
+			
+		case 'owl':
+			// 猫头鹰身体
+			ctx.fillStyle = '#8d6e63';
+			ctx.beginPath();
+			ctx.ellipse(0, 0, 8 * scale, 10 * scale, 0, 0, Math.PI * 2);
+			ctx.fill();
+			// 猫头鹰头部
+			ctx.fillStyle = '#a1887f';
+			ctx.beginPath();
+			ctx.arc(0, -6 * scale, 6 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 猫头鹰眼睛
+			ctx.fillStyle = '#fff';
+			ctx.beginPath();
+			ctx.arc(-3 * scale, -6 * scale, 3 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(3 * scale, -6 * scale, 3 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.fillStyle = '#212121';
+			ctx.beginPath();
+			ctx.arc(-3 * scale, -6 * scale, 1.5 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(3 * scale, -6 * scale, 1.5 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 猫头鹰嘴巴
+			ctx.fillStyle = '#ff6f00';
+			ctx.beginPath();
+			ctx.moveTo(0, -3 * scale);
+			ctx.lineTo(-2 * scale, -1 * scale);
+			ctx.lineTo(2 * scale, -1 * scale);
+			ctx.closePath();
+			ctx.fill();
+			// 猫头鹰耳朵
+			ctx.fillStyle = '#8d6e63';
+			ctx.beginPath();
+			ctx.moveTo(-4 * scale, -12 * scale);
+			ctx.lineTo(-6 * scale, -16 * scale);
+			ctx.lineTo(-2 * scale, -14 * scale);
+			ctx.closePath();
+			ctx.fill();
+			ctx.beginPath();
+			ctx.moveTo(4 * scale, -12 * scale);
+			ctx.lineTo(6 * scale, -16 * scale);
+			ctx.lineTo(2 * scale, -14 * scale);
+			ctx.closePath();
+			ctx.fill();
+			break;
+			
+		default:
+			// 默认绘制苹果
+			ctx.fillStyle = '#ff4444';
+			ctx.beginPath();
+			ctx.ellipse(0, 0, 12 * scale, 15 * scale, 0, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.fillStyle = '#4caf50';
+			ctx.beginPath();
+			ctx.ellipse(0, -15 * scale, 4 * scale, 6 * scale, -0.3, 0, Math.PI * 2);
+			ctx.fill();
+			break;
+	}
+	
+	ctx.restore();
 }
 
 // 绘制不同形状的函数
@@ -1033,6 +1700,13 @@ function spawnItem() {
 		];
 		const colorPair = colors[Math.floor(Math.random() * colors.length)];
 		
+		// 随机卡通图案类型
+		const patternTypes = ['apple', 'orange', 'strawberry', 'banana', 'grape', 
+		                      'butterfly', 'bee', 'ladybug', 'dragonfly', 
+		                      'bird', 'parrot', 'eagle', 'owl',
+		                      'cherry', 'watermelon', 'pineapple', 'peach'];
+		const patternType = patternTypes[Math.floor(Math.random() * patternTypes.length)];
+		
 		items.push({ 
 			x, y, 
 			text: w.text, 
@@ -1042,7 +1716,8 @@ function spawnItem() {
 			h: cardH, 
 			ttl: 8000,
 			shape: shape, // 形状类型
-			colors: colorPair // 颜色对
+			colors: colorPair, // 颜色对
+			patternType: patternType // 卡通图案类型
 		});
 	} catch (err) {
 		console.error(err);

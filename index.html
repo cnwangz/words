@@ -14,8 +14,9 @@
 			<h1>🦜 <span class="fancy-title">大嘴鸟</span> · 字词学习版</h1>
 		</header>
 
-		<section class="toolbar">
-			<div class="stats">
+		<section class="game-wrap">
+			<!-- 左侧统计信息（竖排） -->
+			<div class="stats-left">
 				<div class="stat"><span>分数</span><strong id="score">0</strong></div>
 				<div class="stat"><span>等级</span><strong id="level">1</strong></div>
 				<div class="stat"><span>速度</span><strong id="speed">慢</strong></div>
@@ -23,15 +24,15 @@
 				<div class="stat"><span>错误</span><strong id="wrong">0</strong></div>
 				<div class="stat"><span>升级进度</span><strong id="progress">0/15</strong></div>
 			</div>
-			<div class="buttons">
+			
+			<!-- 右侧按钮（竖排，底部对齐到绿色地平线） -->
+			<div class="buttons-right">
 				<button id="startBtn" class="btn primary">开始</button>
 				<button id="pauseBtn" class="btn" disabled>暂停</button>
 				<button id="resetBtn" class="btn">重置</button>
 				<button id="musicBtn" class="btn" title="音乐开关">🔊</button>
 			</div>
-		</section>
-
-		<section class="game-wrap">
+			
 			<canvas id="board" width="960" height="640"></canvas>
 			<div id="overlay" class="overlay">
 				<div class="panel">
@@ -82,7 +83,7 @@
 
 	<!-- 背景音乐 -->
 	<audio id="bgMusic" loop>
-		<source src="Wrggh.flac" type="audio/flac">
+		<source src="guoliang.mp3" type="audio/mpeg">
 		您的浏览器不支持音频播放。
 	</audio>
 
