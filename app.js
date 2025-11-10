@@ -1325,7 +1325,14 @@ function maybeLevelUp() {
 function onClickCanvas(e) {
 	if (!STATE.running || STATE.paused) return;
 	const rect = canvas.getBoundingClientRect();
-	const mx = e.clientX - rect.left; const my = e.clientY - rect.top;
+	
+	// 计算缩放比例（Canvas实际显示大小 vs Canvas逻辑大小）
+	const scaleX = canvas.width / rect.width;
+	const scaleY = canvas.height / rect.height;
+	
+	// 根据缩放比例调整坐标
+	const mx = (e.clientX - rect.left) * scaleX;
+	const my = (e.clientY - rect.top) * scaleY;
 	
 	// 记录点击位置，用于树木摆动
 	lastClickX = mx;
@@ -1474,8 +1481,14 @@ function startLongPress(e) {
 	// 如果是在游戏进行中点击词条，不触发长按
 	if (STATE.running && !STATE.paused) {
 		const rect = canvas.getBoundingClientRect();
-		const mx = e.clientX - rect.left;
-		const my = e.clientY - rect.top;
+		
+		// 计算缩放比例
+		const scaleX = canvas.width / rect.width;
+		const scaleY = canvas.height / rect.height;
+		
+		// 根据缩放比例调整坐标
+		const mx = (e.clientX - rect.left) * scaleX;
+		const my = (e.clientY - rect.top) * scaleY;
 		
 		// 检查是否点击了词条
 		for (const it of items) {
@@ -1576,9 +1589,15 @@ canvas.addEventListener('mousedown', startLongPress);
 canvas.addEventListener('mouseup', cancelLongPress);
 canvas.addEventListener('mouseleave', cancelLongPress);
 
-// 长按事件（触摸屏）
+// 触摸事件处理（移动端）
+let touchStartTime = 0;
+let touchStartPos = null;
+
 canvas.addEventListener('touchstart', (e) => {
 	const touch = e.touches[0];
+	touchStartTime = Date.now();
+	touchStartPos = { x: touch.clientX, y: touch.clientY };
+	
 	const mouseEvent = new MouseEvent('mousedown', {
 		clientX: touch.clientX,
 		clientY: touch.clientY
@@ -1586,7 +1605,29 @@ canvas.addEventListener('touchstart', (e) => {
 	startLongPress(mouseEvent);
 }, { passive: true });
 
-canvas.addEventListener('touchend', cancelLongPress);
+canvas.addEventListener('touchend', (e) => {
+	cancelLongPress();
+	
+	// 如果是快速点击（不是长按），触发点击事件
+	const touchDuration = Date.now() - touchStartTime;
+	if (touchDuration < 500 && touchStartPos) {
+		const touch = e.changedTouches[0];
+		const moveDistance = Math.hypot(touch.clientX - touchStartPos.x, touch.clientY - touchStartPos.y);
+		
+		// 如果移动距离很小，认为是点击
+		if (moveDistance < 10) {
+			const mouseEvent = new MouseEvent('click', {
+				clientX: touch.clientX,
+				clientY: touch.clientY,
+				bubbles: true
+			});
+			onClickCanvas(mouseEvent);
+		}
+	}
+	
+	touchStartPos = null;
+});
+
 canvas.addEventListener('touchcancel', cancelLongPress);
 
 startBtn.addEventListener('click', startGame);
