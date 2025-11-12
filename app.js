@@ -27,6 +27,44 @@ const musicBtn = document.getElementById('musicBtn');
 // 音乐状态
 let musicEnabled = true;
 
+// 低配模式与帧率控制
+let lowPowerMode = false;
+let lastFrameAt = 0;
+const TARGET_FPS_LOW = 30;
+function shouldSkipFrame(nowTs) {
+	if (!lowPowerMode) return false;
+	if (nowTs - lastFrameAt < (1000 / TARGET_FPS_LOW)) return true;
+	lastFrameAt = nowTs;
+	return false;
+}
+function autoDetectLowPower() {
+	try {
+		const cores = navigator.hardwareConcurrency || 2;
+		const mem = navigator.deviceMemory || 4;
+		const dpr = window.devicePixelRatio || 1;
+		return cores <= 2 || mem <= 4 || dpr <= 1;
+	} catch (e) {
+		return false;
+	}
+}
+
+// 启动时自动检测是否进入低配模式，支持 URL 开关 ?low=1 / ?low=0
+(() => {
+	try {
+		const usp = new URLSearchParams(location.search);
+		if (usp.has('low')) {
+			lowPowerMode = usp.get('low') === '1';
+		} else {
+			lowPowerMode = autoDetectLowPower();
+		}
+		if (lowPowerMode) {
+			console.log('⚙️ 已启用低配模式：将降低帧率并简化特效');
+		}
+	} catch (e) {
+		// ignore
+	}
+})();
+
 // 等级：移动速度（像素/帧）、出词间隔(ms)、最大并发词数
 const LEVELS = [
 	{ name: '慢',   birdSpeed: 4,  spawnMs: 1400, maxItems: 3 },
@@ -132,23 +170,24 @@ function drawBackground() {
 	const sunY = 100;
 	const sunSize = 40;
 	
-	// 太阳光晕（脉冲效果）
-	const pulseSize = sunSize * (1.4 + Math.sin(sunAngle * 2) * 0.1);
-	ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
-	ctx.beginPath();
-	ctx.arc(sunX, sunY, pulseSize, 0, Math.PI * 2);
-	ctx.fill();
-	
-	// 太阳光芒
-	ctx.strokeStyle = '#ffd700';
-	ctx.lineWidth = 3;
-	for (let i = 0; i < 12; i++) {
-		const angle = (i / 12) * Math.PI * 2 + sunAngle;
-		const rayLength = sunSize + 15 + Math.sin(sunAngle * 3 + i) * 5;
+	// 太阳光晕/光芒（低配模式下跳过以减少绘制开销）
+	if (!lowPowerMode) {
+		const pulseSize = sunSize * (1.4 + Math.sin(sunAngle * 2) * 0.1);
+		ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
 		ctx.beginPath();
-		ctx.moveTo(sunX + Math.cos(angle) * sunSize, sunY + Math.sin(angle) * sunSize);
-		ctx.lineTo(sunX + Math.cos(angle) * rayLength, sunY + Math.sin(angle) * rayLength);
-		ctx.stroke();
+		ctx.arc(sunX, sunY, pulseSize, 0, Math.PI * 2);
+		ctx.fill();
+		
+		ctx.strokeStyle = '#ffd700';
+		ctx.lineWidth = 3;
+		for (let i = 0; i < 12; i++) {
+			const angle = (i / 12) * Math.PI * 2 + sunAngle;
+			const rayLength = sunSize + 15 + Math.sin(sunAngle * 3 + i) * 5;
+			ctx.beginPath();
+			ctx.moveTo(sunX + Math.cos(angle) * sunSize, sunY + Math.sin(angle) * sunSize);
+			ctx.lineTo(sunX + Math.cos(angle) * rayLength, sunY + Math.sin(angle) * rayLength);
+			ctx.stroke();
+		}
 	}
 	
 	// 太阳身体
@@ -157,42 +196,42 @@ function drawBackground() {
 	ctx.arc(sunX, sunY, sunSize, 0, Math.PI * 2);
 	ctx.fill();
 	
-	// 太阳眼睛（开心的眯眯眼）
-	ctx.fillStyle = '#333';
-	ctx.lineWidth = 3;
-	// 左眼
-	ctx.beginPath();
-	ctx.arc(sunX - 12, sunY - 8, 2, 0, Math.PI * 2);
-	ctx.fill();
-	ctx.beginPath();
-	ctx.arc(sunX - 12, sunY - 8, 8, 0.2, Math.PI - 0.2);
-	ctx.stroke();
-	// 右眼
-	ctx.beginPath();
-	ctx.arc(sunX + 12, sunY - 8, 2, 0, Math.PI * 2);
-	ctx.fill();
-	ctx.beginPath();
-	ctx.arc(sunX + 12, sunY - 8, 8, 0.2, Math.PI - 0.2);
-	ctx.stroke();
-	
-	// 太阳嘴巴（大大的笑容）
-	ctx.strokeStyle = '#ff6b6b';
-	ctx.lineWidth = 3;
-	ctx.beginPath();
-	ctx.arc(sunX, sunY + 5, 20, 0.3, Math.PI - 0.3);
-	ctx.stroke();
-	
-	// 太阳脸颊（红晕）
-	ctx.fillStyle = 'rgba(255, 150, 150, 0.4)';
-	ctx.beginPath();
-	ctx.arc(sunX - 25, sunY + 8, 8, 0, Math.PI * 2);
-	ctx.fill();
-	ctx.beginPath();
-	ctx.arc(sunX + 25, sunY + 8, 8, 0, Math.PI * 2);
-	ctx.fill();
+	// 面部装饰（低配模式跳过）
+	if (!lowPowerMode) {
+		ctx.fillStyle = '#333';
+		ctx.lineWidth = 3;
+		ctx.beginPath();
+		ctx.arc(sunX - 12, sunY - 8, 2, 0, Math.PI * 2);
+		ctx.fill();
+		ctx.beginPath();
+		ctx.arc(sunX - 12, sunY - 8, 8, 0.2, Math.PI - 0.2);
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.arc(sunX + 12, sunY - 8, 2, 0, Math.PI * 2);
+		ctx.fill();
+		ctx.beginPath();
+		ctx.arc(sunX + 12, sunY - 8, 8, 0.2, Math.PI - 0.2);
+		ctx.stroke();
+		
+		ctx.strokeStyle = '#ff6b6b';
+		ctx.lineWidth = 3;
+		ctx.beginPath();
+		ctx.arc(sunX, sunY + 5, 20, 0.3, Math.PI - 0.3);
+		ctx.stroke();
+		
+		ctx.fillStyle = 'rgba(255, 150, 150, 0.4)';
+		ctx.beginPath();
+		ctx.arc(sunX - 25, sunY + 8, 8, 0, Math.PI * 2);
+		ctx.fill();
+		ctx.beginPath();
+		ctx.arc(sunX + 25, sunY + 8, 8, 0, Math.PI * 2);
+		ctx.fill();
+	}
 	
 	// 云朵（动态）
-	for (const cloud of clouds) {
+	const cloudCount = lowPowerMode ? Math.min(2, clouds.length) : clouds.length;
+	for (let i = 0; i < cloudCount; i++) {
+		const cloud = clouds[i];
 		cloud.x += cloud.speed;
 		if (cloud.x > canvas.width + 100) cloud.x = -100;
 		drawCloud(cloud.x, cloud.y, cloud.size);
@@ -237,14 +276,17 @@ function drawBackground() {
 	
 	// 地面装饰（小草）
 	ctx.fillStyle = '#66bb6a';
-	for (let i = 0; i < 20; i++) {
+	const grassN = lowPowerMode ? 8 : 20;
+	for (let i = 0; i < grassN; i++) {
 		const x = (i * 50) % canvas.width;
 		const y = canvas.height - 120 + Math.sin(i) * 5;
 		ctx.fillRect(x, y, 2, 8);
 	}
 	
 	// 可爱的草地装饰
-	drawGroundDecorations();
+	if (!lowPowerMode) {
+		drawGroundDecorations();
+	}
 }
 
 // 绘制草地装饰（乌龟、小兔子、蘑菇、小花等）
@@ -723,7 +765,8 @@ function drawParticles() {
 }
 
 function createParticles(x, y, color, count = 10) {
-	for (let i = 0; i < count; i++) {
+	const actual = lowPowerMode ? Math.min(6, count) : count;
+	for (let i = 0; i < actual; i++) {
 		particles.push({
 			x, y,
 			vx: (Math.random() - 0.5) * 4,
@@ -732,6 +775,11 @@ function createParticles(x, y, color, count = 10) {
 			color: color,
 			size: 2 + Math.random() * 3
 		});
+	}
+	// 限制粒子总量（低配更严格）
+	const maxParticles = lowPowerMode ? 60 : 160;
+	if (particles.length > maxParticles) {
+		particles.splice(0, particles.length - maxParticles);
 	}
 }
 
@@ -770,13 +818,16 @@ function drawFloatingTexts() {
 	for (const ft of floatingTexts) {
 		ctx.save();
 		ctx.globalAlpha = ft.life / 120;
-		ctx.font = `bold ${24 * ft.scale}px "Microsoft YaHei", SimHei, Arial`;
+		const base = lowPowerMode ? 18 : 24;
+		ctx.font = `bold ${base * ft.scale}px "Microsoft YaHei", SimHei, Arial`;
 		ctx.textAlign = 'left';
 		ctx.textBaseline = 'middle';
-		// 文字描边
-		ctx.strokeStyle = '#fff';
-		ctx.lineWidth = 4;
-		ctx.strokeText(ft.text, ft.x, ft.y);
+		// 低配模式移除描边以减少两次文字绘制
+		if (!lowPowerMode) {
+			ctx.strokeStyle = '#fff';
+			ctx.lineWidth = 4;
+			ctx.strokeText(ft.text, ft.x, ft.y);
+		}
 		// 文字填充
 		ctx.fillStyle = ft.color;
 		ctx.fillText(ft.text, ft.x, ft.y);
@@ -994,15 +1045,19 @@ function drawBird() {
 function drawItems() {
 	for (const it of items) {
 		ctx.save();
-		// 卡片闪烁效果（随时间变化）
-		const time = Date.now() * 0.005;
-		const pulse = Math.sin(time + it.x * 0.01) * 0.1 + 0.9;
-		
-		// 卡片阴影
-		ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
-		ctx.shadowBlur = 8;
-		ctx.shadowOffsetX = 2;
-		ctx.shadowOffsetY = 2;
+		// 低配模式不做阴影与动态脉冲，减少重绘成本
+		if (!lowPowerMode) {
+			const time = Date.now() * 0.005;
+			void Math.sin(time + it.x * 0.01); // 仅保留读取以避免移除过多代码
+			ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+			ctx.shadowBlur = 8;
+			ctx.shadowOffsetX = 2;
+			ctx.shadowOffsetY = 2;
+		} else {
+			ctx.shadowBlur = 0;
+			ctx.shadowOffsetX = 0;
+			ctx.shadowOffsetY = 0;
+		}
 		
 		// 使用词条自己的颜色
 		const colors = it.colors || ['#ffe08a', '#ffc241'];
@@ -1016,14 +1071,18 @@ function drawItems() {
 		drawShape(ctx, it.x, it.y, it.w, it.h, shape);
 		
 		// 边框
-		ctx.shadowBlur = 0;
-		ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-		ctx.lineWidth = 3;
-		drawShape(ctx, it.x, it.y, it.w, it.h, shape, true);
+		if (!lowPowerMode) {
+			ctx.shadowBlur = 0;
+			ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+			ctx.lineWidth = 3;
+			drawShape(ctx, it.x, it.y, it.w, it.h, shape, true);
+		}
 		
-		// 绘制卡通图案（在文字上方）
-		const patternType = it.patternType || 'apple';
-		drawCartoonPattern(ctx, it.x, it.y - 12, patternType, it.w * 0.6);
+		// 绘制卡通图案（低配模式跳过）
+		if (!lowPowerMode) {
+			const patternType = it.patternType || 'apple';
+			drawCartoonPattern(ctx, it.x, it.y - 12, patternType, it.w * 0.6);
+		}
 		
 		// 文本（在图案下方，自适应字号，调大1/3）
 		ctx.fillStyle = '#222';
@@ -1670,7 +1729,9 @@ function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r
 
 function spawnItem() {
 	try {
-		if (items.length >= LEVELS[STATE.level - 1].maxItems) return;
+		const baseMax = LEVELS[STATE.level - 1].maxItems;
+		const maxItems = lowPowerMode ? Math.max(2, Math.floor(baseMax * 0.7)) : baseMax;
+		if (items.length >= maxItems) return;
 		if (typeof sampleWord !== 'function') { showToast('词库未加载，请检查 words_*.js 引用', '#b91c1c'); return; }
 		
 		// 每9个正确词必出1个错误词
@@ -1685,8 +1746,10 @@ function spawnItem() {
 		const y = 80 + Math.random() * (canvas.height - 220);
 		const cardW = 140, cardH = 56;
 		
-		// 随机形状类型：圆形、椭圆、菱形、六边形、星形、云朵形
-		const shapes = ['circle', 'ellipse', 'diamond', 'hexagon', 'star', 'cloud', 'rect'];
+		// 随机形状类型（低配模式减少复杂形状）
+		const shapes = lowPowerMode
+			? ['rect', 'circle', 'ellipse']
+			: ['circle', 'ellipse', 'diamond', 'hexagon', 'star', 'cloud', 'rect'];
 		const shape = shapes[Math.floor(Math.random() * shapes.length)];
 		
 		// 随机颜色（多彩词条）
@@ -1975,8 +2038,13 @@ function draw() {
 	updateUI();
 }
 
-function loop() {
+function loop(ts) {
 	if (!STATE.running) return;
+	// 低配模式下丢帧以维持 30FPS 左右
+	if (shouldSkipFrame(ts)) {
+		animationId = requestAnimationFrame(loop);
+		return;
+	}
 	update();
 	draw();
 	animationId = requestAnimationFrame(loop);
@@ -1984,7 +2052,9 @@ function loop() {
 
 function startLoops() {
 	clearInterval(spawnTimer);
-	spawnTimer = setInterval(spawnItem, LEVELS[STATE.level - 1].spawnMs);
+	const baseMs = LEVELS[STATE.level - 1].spawnMs;
+	const spawnMs = lowPowerMode ? Math.round(baseMs * 1.25) : baseMs;
+	spawnTimer = setInterval(spawnItem, spawnMs);
 	loop();
 }
 
