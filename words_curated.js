@@ -1,302 +1,1712 @@
-// 默认词库 - 七年级期中版（吾日三省吾身优先）
+// 默认词库 - 七年级上册生字词
 const WORD_BANK = [
-  { "word": "吾日三省吾身", "correct": true },
-  { "word": "吾日三醒吾身", "correct": false, "right": "吾日三省吾身" },
-  { "word": "朗润", "correct": true },
-  { "word": "郎润", "correct": false, "right": "朗润" },
-  { "word": "酝酿", "correct": true },
-  { "word": "蕴酿", "correct": false, "right": "酝酿" },
-  { "word": "嘹亮", "correct": true },
-  { "word": "分歧", "correct": true },
-  { "word": "分岐", "correct": false, "right": "分歧" },
-  { "word": "澄清", "correct": true },
-  { "word": "澄青", "correct": false, "right": "澄清" },
-  { "word": "粗犷", "correct": true },
-  { "word": "粗旷", "correct": false, "right": "粗犷" },
-  { "word": "贮蓄", "correct": true },
-  { "word": "确凿", "correct": true },
-  { "word": "攲斜", "correct": true },
-  { "word": "宽恕", "correct": true },
-  { "word": "宽怒", "correct": false, "right": "宽恕" },
-  { "word": "收敛", "correct": true },
-  { "word": "倏忽", "correct": true },
-  { "word": "倏乎", "correct": false, "right": "倏忽" },
-  { "word": "伶仃", "correct": true },
-  { "word": "伶丁", "correct": false, "right": "伶仃" },
-  { "word": "嶙峋", "correct": true },
-  { "word": "迂回", "correct": true },
-  { "word": "卓越", "correct": true },
-  { "word": "卓跃", "correct": false, "right": "卓越" },
-  { "word": "笃志", "correct": true },
-  { "word": "笃智", "correct": false, "right": "笃志" },
-  { "word": "痴想", "correct": true },
-  { "word": "诱惑", "correct": true },
-  { "word": "诱或", "correct": false, "right": "诱惑" },
-  { "word": "点缀", "correct": true },
-  { "word": "点辍", "correct": false, "right": "点缀" },
-  { "word": "绽放", "correct": true },
-  { "word": "淀放", "correct": false, "right": "绽放" },
-  { "word": "倾向", "correct": true },
-  { "word": "倾项", "correct": false, "right": "倾向" },
-  { "word": "谋生", "correct": true },
-  { "word": "谋声", "correct": false, "right": "谋生" },
-  { "word": "铭记", "correct": true },
-  { "word": "明记", "correct": false, "right": "铭记" },
-  { "word": "叛逆", "correct": true },
-  { "word": "丑陋", "correct": true },
-  { "word": "憧憬", "correct": true },
-  { "word": "憧景", "correct": false, "right": "憧憬" },
-  { "word": "瘫痪", "correct": true },
-  { "word": "摊痪", "correct": false, "right": "瘫痪" },
-  { "word": "沐浴", "correct": true },
-  { "word": "沫浴", "correct": false, "right": "沐浴" },
-  { "word": "慈怜", "correct": true },
-  { "word": "慈连", "correct": false, "right": "慈怜" },
-  { "word": "褪色", "correct": true },
-  { "word": "退色", "correct": false, "right": "褪色" },
-  { "word": "焚香", "correct": true },
-  { "word": "截然", "correct": true },
-  { "word": "结然", "correct": false, "right": "截然" },
-  { "word": "怦怦", "correct": true },
-  { "word": "砰砰", "correct": false, "right": "怦怦" },
-  { "word": "尴尬", "correct": true },
-  { "word": "尬尴", "correct": false, "right": "尴尬" },
-  { "word": "荣耀", "correct": true },
-  { "word": "荣曜", "correct": false, "right": "荣耀" },
-  { "word": "绰号", "correct": true },
-  { "word": "抖擞", "correct": true },
-  { "word": "抖数", "correct": false, "right": "抖擞" },
-  { "word": "捉迷藏", "correct": true },
-  { "word": "捉谜藏", "correct": false, "right": "捉迷藏" },
-  { "word": "澄净", "correct": true },
-  { "word": "澄静", "correct": false, "right": "澄净" },
-  { "word": "撩起", "correct": true },
-  { "word": "瞭起", "correct": false, "right": "撩起" },
-  { "word": "偌大", "correct": true },
-  { "word": "若大", "correct": false, "right": "偌大" },
-  { "word": "屋檐", "correct": true },
-  { "word": "屋沿", "correct": false, "right": "屋檐" },
-  { "word": "瞬间", "correct": true },
-  { "word": "寥廓", "correct": true },
-  { "word": "辽廓", "correct": false, "right": "寥廓" },
-  { "word": "芦篷", "correct": true },
-  { "word": "芦蓬", "correct": false, "right": "芦篷" },
-  { "word": "梦寐", "correct": true },
-  { "word": "梦昧", "correct": false, "right": "梦寐" },
-  { "word": "凝成", "correct": true },
-  { "word": "凝城", "correct": false, "right": "凝成" },
-  { "word": "桌越", "correct": false, "right": "卓越" },
-  { "word": "预兆", "correct": true },
-  { "word": "预召", "correct": false, "right": "预兆" },
-  { "word": "督志", "correct": false, "right": "笃志" },
-  { "word": "哀号", "correct": true },
-  { "word": "哀嚎", "correct": false, "right": "哀号" },
-  { "word": "气氛", "correct": true },
-  { "word": "逃窜", "correct": true },
-  { "word": "干扰", "correct": true },
-  { "word": "干挠", "correct": false, "right": "干扰" },
-  { "word": "椭圆", "correct": true },
-  { "word": "妥圆", "correct": false, "right": "椭圆" },
-  { "word": "愚蠢", "correct": true },
-  { "word": "鱼蠢", "correct": false, "right": "愚蠢" },
-  { "word": "炫耀", "correct": true },
-  { "word": "炫曜", "correct": false, "right": "炫耀" },
-  { "word": "踪迹", "correct": true },
-  { "word": "宗迹", "correct": false, "right": "踪迹" },
-  { "word": "嬉戏", "correct": true },
-  { "word": "嘻戏", "correct": false, "right": "嬉戏" },
-  { "word": "泥泞", "correct": true },
-  { "word": "泥泥", "correct": false, "right": "泥泞" },
-  { "word": "闷热", "correct": true },
-  { "word": "疲倦不堪", "correct": true },
-  { "word": "疲卷不堪", "correct": false, "right": "疲倦不堪" },
-  { "word": "花团锦簇", "correct": true },
-  { "word": "花团锦族", "correct": false, "right": "花团锦簇" },
-  { "word": "踉踉跄跄", "correct": true },
-  { "word": "踉踉呛呛", "correct": false, "right": "踉踉跄跄" },
-  { "word": "拆散", "correct": true },
-  { "word": "折散", "correct": false, "right": "拆散" },
-  { "word": "仿膳", "correct": true },
-  { "word": "仿善", "correct": false, "right": "仿膳" },
-  { "word": "嗅到", "correct": true },
-  { "word": "臭到", "correct": false, "right": "嗅到" },
-  { "word": "逮住", "correct": true },
-  { "word": "并蒂", "correct": true },
-  { "word": "并帝", "correct": false, "right": "并蒂" },
-  { "word": "宽数", "correct": false, "right": "宽恕" },
-  { "word": "磕头", "correct": true },
-  { "word": "嗑头", "correct": false, "right": "磕头" },
-  { "word": "搓捻", "correct": true },
-  { "word": "搓拈", "correct": false, "right": "搓捻" },
-  { "word": "惨境", "correct": true },
-  { "word": "顷向", "correct": false, "right": "倾向" },
-  { "word": "呆板", "correct": true },
-  { "word": "铭计", "correct": false, "right": "铭记" },
-  { "word": "判逆", "correct": false, "right": "叛逆" },
-  { "word": "镶边", "correct": true },
-  { "word": "锥形", "correct": true },
-  { "word": "晕倒", "correct": true },
-  { "word": "陡峭", "correct": true },
-  { "word": "疲乏", "correct": true },
-  { "word": "疲泛", "correct": false, "right": "疲乏" },
-  { "word": "撩亮", "correct": false, "right": "嘹亮" },
-  { "word": "喧腾", "correct": true },
-  { "word": "喧滕", "correct": false, "right": "喧腾" },
-  { "word": "引颈", "correct": true },
-  { "word": "窸窣", "correct": true },
-  { "word": "随风直到夜郎西", "correct": false, "right": "随君直到夜郎西" },
-  { "word": "随君直到夜郎西", "correct": true },
-  { "word": "随君直到夜朗西", "correct": false, "right": "随君直到夜郎西" },
-  { "word": "人不知而不愠", "correct": true },
-  { "word": "人不知而不温", "correct": false, "right": "人不知而不愠" },
-  { "word": "海日生残夜", "correct": true },
-  { "word": "海日升残夜", "correct": false, "right": "海日生残夜" },
-  { "word": "海日生残月", "correct": false, "right": "海日生残夜" },
-  { "word": "江春入旧年", "correct": true },
-  { "word": "江村入旧年", "correct": false, "right": "江春入旧年" },
-  { "word": "学而不思则罔", "correct": true },
-  { "word": "学而不思则网", "correct": false, "right": "学而不思则罔" },
-  { "word": "分歧（qí）", "correct": true },
-  { "word": "分岐（qǐ）", "correct": false, "right": "分歧（qí）" },
-  { "word": "嫩芽（nèn）", "correct": true },
-  { "word": "嫰芽（nèn）", "correct": false, "right": "嫩芽（nèn）" },
-  { "word": "整宿（xiǔ）", "correct": true },
-  { "word": "整宿（sù）", "correct": false, "right": "整宿（xiǔ）" },
-  { "word": "侍弄（shì）", "correct": true },
-  { "word": "侍弄（sì）", "correct": false, "right": "侍弄（shì）" },
-  { "word": "絮叨（xù）", "correct": true },
-  { "word": "絮叨（xū）", "correct": false, "right": "絮叨（xù）" },
-  { "word": "淡雅（yǎ）", "correct": true },
-  { "word": "淡雅（yā）", "correct": false, "right": "淡雅（yǎ）" },
-  { "word": "憔悴（qiáo）", "correct": true },
-  { "word": "憔悴（jiāo）", "correct": false, "right": "憔悴（qiáo）" },
-  { "word": "脸颊（jiá）", "correct": true },
-  { "word": "脸颊（xiá）", "correct": false, "right": "脸颊（jiá）" },
-  { "word": "不禁（jīn）", "correct": true },
-  { "word": "不禁（jìn）", "correct": false, "right": "不禁（jīn）" },
-  { "word": "咽喉（yān）", "correct": true },
-  { "word": "咽喉（yàn）", "correct": false, "right": "咽喉（yān）" },
-  { "word": "涟漪（yī）", "correct": true },
-  { "word": "涟漪（yì）", "correct": false, "right": "涟漪（yī）" },
-  { "word": "占卜（bǔ）", "correct": true },
-  { "word": "占卜（pǔ）", "correct": false, "right": "占卜（bǔ）" },
-  { "word": "譬如（pì）", "correct": true },
-  { "word": "譬如（bì）", "correct": false, "right": "譬如（pì）" },
-  { "word": "暂时（zàn）", "correct": true },
-  { "word": "暂时（zhàn）", "correct": false, "right": "暂时（zàn）" },
-  { "word": "遗憾（hàn）", "correct": true },
-  { "word": "遗憾（hán）", "correct": false, "right": "遗憾（hàn）" },
-  { "word": "潜力（qián）", "correct": true },
-  { "word": "潜力（jiān）", "correct": false, "right": "潜力（qián）" },
-  { "word": "威慑（shè）", "correct": true },
-  { "word": "威慑（shé）", "correct": false, "right": "威慑（shè）" },
-  { "word": "停滞（zhì）", "correct": true },
-  { "word": "停滞（zhǐ）", "correct": false, "right": "停滞（zhì）" },
-  { "word": "须臾（yú）", "correct": true },
-  { "word": "须臾（yǔ）", "correct": false, "right": "须臾（yú）" },
-  { "word": "嘈杂（cáo）", "correct": true },
-  { "word": "嘈杂（zào）", "correct": false, "right": "嘈杂（cáo）" },
-  { "word": "应和（hè）", "correct": true },
-  { "word": "应和（hé）", "correct": false, "right": "应和（hè）" },
-  { "word": "黄晕（yùn）", "correct": true },
-  { "word": "黄晕（yūn）", "correct": false, "right": "黄晕（yùn）" },
-  { "word": "朗润（rùn）", "correct": true },
-  { "word": "朗润（lùn）", "correct": false, "right": "朗润（rùn）" },
-  { "word": "酝酿（niàng）", "correct": true },
-  { "word": "酝酿（liàng）", "correct": false, "right": "酝酿（niàng）" },
-  { "word": "发酵（jiào）", "correct": true },
-  { "word": "发酵（xiào）", "correct": false, "right": "发酵（jiào）" },
-  { "word": "贮蓄（zhù）", "correct": true },
-  { "word": "贮蓄（chǔ）", "correct": false, "right": "贮蓄（zhù）" },
-  { "word": "看护（kān）", "correct": true },
-  { "word": "看护（kàn）", "correct": false, "right": "看护（kān）" },
-  { "word": "弧形（hú）", "correct": true },
-  { "word": "弧形（hū）", "correct": false, "right": "弧形（hú）" },
-  { "word": "刹那（chà）", "correct": true },
-  { "word": "刹那（shā）", "correct": false, "right": "刹那（chà）" },
-  { "word": "蜷曲（quán）", "correct": true },
-  { "word": "蜷曲（juǎn）", "correct": false, "right": "蜷曲（quán）" },
-  { "word": "栖息（qī）", "correct": true },
-  { "word": "栖息（xī）", "correct": false, "right": "栖息（qī）" },
-  { "word": "枯涸（hé）", "correct": true },
-  { "word": "枯涸（gù）", "correct": false, "right": "枯涸（hé）" },
-  { "word": "归泊（bó）", "correct": true },
-  { "word": "归泊（pō）", "correct": false, "right": "归泊（bó）" },
-  { "word": "迸溅（bèng）", "correct": true },
-  { "word": "迸溅（bìng）", "correct": false, "right": "迸溅（bèng）" },
-  { "word": "伫立（zhù）", "correct": true },
-  { "word": "伫立（chù）", "correct": false, "right": "伫立（zhù）" },
-  { "word": "挑逗（tiǎo）", "correct": true },
-  { "word": "挑逗（tiāo）", "correct": false, "right": "挑逗（tiǎo）" },
-  { "word": "绽放（zhàn）", "correct": true },
-  { "word": "绽放（dìng）", "correct": false, "right": "绽放（zhàn）" },
-  { "word": "耸立（sǒng）", "correct": true },
-  { "word": "耸立（shǒng）", "correct": false, "right": "耸立（sǒng）" },
-  { "word": "纳罕（nà）", "correct": true },
-  { "word": "纳罕（là）", "correct": false, "right": "纳罕（nà）" },
-  { "word": "峭壁（qiào）", "correct": true },
-  { "word": "峭壁（xiào）", "correct": false, "right": "峭壁（qiào）" },
-  { "word": "颤抖（chàn）", "correct": true },
-  { "word": "颤抖（zhàn）", "correct": false, "right": "颤抖（chàn）" },
-  { "word": "屡次（lǚ）", "correct": true },
-  { "word": "屡次（lǜ）", "correct": false, "right": "屡次（lǚ）" },
-  { "word": "痴想（chī）", "correct": true },
-  { "word": "痴想（zhī）", "correct": false, "right": "痴想（chī）" },
-  { "word": "诱惑（yòu）", "correct": true },
-  { "word": "诱惑（xiù）", "correct": false, "right": "诱惑（yòu）" },
-  { "word": "躯壳（qiào）", "correct": true },
-  { "word": "躯壳（ké）", "correct": false, "right": "躯壳（qiào）" },
-  { "word": "匀称（chèn）", "correct": true },
-  { "word": "匀称（chēng）", "correct": false, "right": "匀称（chèn）" },
-  { "word": "弥漫（mí）", "correct": true },
-  { "word": "弥漫（ní）", "correct": false, "right": "弥漫（mí）" },
-  { "word": "吮吸（shǔn）", "correct": true },
-  { "word": "吮吸（yǔn）", "correct": false, "right": "吮吸（shǎn）" },
-  { "word": "盔甲（kuī）", "correct": true },
-  { "word": "盔甲（kūn）", "correct": false, "right": "盔甲（kuī）" },
-  { "word": "妒忌（dù）", "correct": true },
-  { "word": "妒忌（tù）", "correct": false, "right": "妒忌（dù）" },
-  { "word": "大厦（shà）", "correct": true },
-  { "word": "大厦（xià）", "correct": false, "right": "大厦（shà）" },
-  { "word": "轨道（guǐ）", "correct": true },
-  { "word": "轨道（guì）", "correct": false, "right": "轨道（guǐ）" },
-  { "word": "愕然（è）", "correct": true },
-  { "word": "愕然（wù）", "correct": false, "right": "愕然（è）" },
-  { "word": "滑稽（jī）", "correct": true },
-  { "word": "滑稽（jì）", "correct": false, "right": "滑稽（jī）" },
-  { "word": "勋章（xūn）", "correct": true },
-  { "word": "勋章（xùn）", "correct": false, "right": "勋章（xūn）" },
-  { "word": "赏赐（cì）", "correct": true },
-  { "word": "赏赐（sì）", "correct": false, "right": "赏赐（cì）" },
-  { "word": "称职（chèn）", "correct": true },
-  { "word": "称职（chēng）", "correct": false, "right": "称职（chèn）" },
-  { "word": "绵延（mián）", "correct": true },
-  { "word": "绵延（miǎn）", "correct": false, "right": "绵延（mián）" },
-  { "word": "孪生（luán）", "correct": true },
-  { "word": "孪生（luàn）", "correct": false, "right": "孪生（luán）" },
-  { "word": "小心翼翼（yì）", "correct": true },
-  { "word": "小心翼翼（yí）", "correct": false, "right": "小心翼翼（yì）" },
-  { "word": "忍俊不禁（jīn）", "correct": true },
-  { "word": "忍俊不禁（jìn）", "correct": false, "right": "忍俊不禁（jīn）" },
-  { "word": "灰心丧气（sàng）", "correct": true },
-  { "word": "灰心丧气（sāng）", "correct": false, "right": "灰心丧气（sàng）" },
-  { "word": "一丝不苟（gǒu）", "correct": true },
-  { "word": "一丝不苟（gōu）", "correct": false, "right": "一丝不苟（gǒu）" },
-  { "word": "随声附和（hè）", "correct": true },
-  { "word": "随声附和（hé）", "correct": false, "right": "随声附和（hè）" },
-  { "word": "骇人听闻（hài）", "correct": true },
-  { "word": "骇人听闻（hǎi）", "correct": false, "right": "骇人听闻（hài）" }
+  {
+    "word": "莫名其妙",
+    "correct": true
+  },
+  {
+    "word": "莫明其妙",
+    "correct": false,
+    "right": "莫名其妙"
+  },
+  {
+    "word": "不假思索",
+    "correct": true
+  },
+  {
+    "word": "不加思索",
+    "correct": false,
+    "right": "不假思索"
+  },
+  {
+    "word": "废寝忘食",
+    "correct": true
+  },
+  {
+    "word": "费寝忘食",
+    "correct": false,
+    "right": "废寝忘食"
+  },
+  {
+    "word": "再接再厉",
+    "correct": true
+  },
+  {
+    "word": "再接再励",
+    "correct": false,
+    "right": "再接再厉"
+  },
+  {
+    "word": "变本加厉",
+    "correct": true
+  },
+  {
+    "word": "变本加利",
+    "correct": false,
+    "right": "变本加厉"
+  },
+  {
+    "word": "偃旗息鼓",
+    "correct": true
+  },
+  {
+    "word": "掩旗息鼓",
+    "correct": false,
+    "right": "偃旗息鼓"
+  },
+  {
+    "word": "别出心裁",
+    "correct": true
+  },
+  {
+    "word": "别出新裁",
+    "correct": false,
+    "right": "别出心裁"
+  },
+  {
+    "word": "谈笑风生",
+    "correct": true
+  },
+  {
+    "word": "谈笑风声",
+    "correct": false,
+    "right": "谈笑风生"
+  },
+  {
+    "word": "流光溢彩",
+    "correct": true
+  },
+  {
+    "word": "流光溢采",
+    "correct": false,
+    "right": "流光溢彩"
+  },
+  {
+    "word": "呕心沥血",
+    "correct": true
+  },
+  {
+    "word": "沤心沥血",
+    "correct": false,
+    "right": "呕心沥血"
+  },
+  {
+    "word": "大相径庭",
+    "correct": true
+  },
+  {
+    "word": "大相经庭",
+    "correct": false,
+    "right": "大相径庭"
+  },
+  {
+    "word": "不省人事",
+    "correct": true
+  },
+  {
+    "word": "不醒人事",
+    "correct": false,
+    "right": "不省人事"
+  },
+  {
+    "word": "艰苦朴素",
+    "correct": true
+  },
+  {
+    "word": "坚苦朴素",
+    "correct": false,
+    "right": "艰苦朴素"
+  },
+  {
+    "word": "锐不可当",
+    "correct": true
+  },
+  {
+    "word": "锐不可挡",
+    "correct": false,
+    "right": "锐不可当"
+  },
+  {
+    "word": "粗制滥造",
+    "correct": true
+  },
+  {
+    "word": "粗制烂造",
+    "correct": false,
+    "right": "粗制滥造"
+  },
+  {
+    "word": "鞠躬尽瘁",
+    "correct": true
+  },
+  {
+    "word": "鞠躬尽粹",
+    "correct": false,
+    "right": "鞠躬尽瘁"
+  },
+  {
+    "word": "神态安详",
+    "correct": true
+  },
+  {
+    "word": "神态安祥",
+    "correct": false,
+    "right": "神态安详"
+  },
+  {
+    "word": "清冽可鉴",
+    "correct": true
+  },
+  {
+    "word": "清洌可鉴",
+    "correct": false,
+    "right": "清冽可鉴"
+  },
+  {
+    "word": "墨守成规",
+    "correct": true
+  },
+  {
+    "word": "墨守陈规",
+    "correct": false,
+    "right": "墨守成规"
+  },
+  {
+    "word": "张灯结彩",
+    "correct": true
+  },
+  {
+    "word": "张灯接彩",
+    "correct": false,
+    "right": "张灯结彩"
+  },
+  {
+    "word": "抑扬顿挫",
+    "correct": true
+  },
+  {
+    "word": "仰扬顿挫",
+    "correct": false,
+    "right": "抑扬顿挫"
+  },
+  {
+    "word": "甜言蜜语",
+    "correct": true
+  },
+  {
+    "word": "甜言密语",
+    "correct": false,
+    "right": "甜言蜜语"
+  },
+  {
+    "word": "绿树成荫",
+    "correct": true
+  },
+  {
+    "word": "绿树成阴",
+    "correct": false,
+    "right": "绿树成荫"
+  },
+  {
+    "word": "反映情况",
+    "correct": true
+  },
+  {
+    "word": "反应情况",
+    "correct": false,
+    "right": "反映情况"
+  },
+  {
+    "word": "两全其美",
+    "correct": true
+  },
+  {
+    "word": "两全齐美",
+    "correct": false,
+    "right": "两全其美"
+  },
+  {
+    "word": "打架斗殴",
+    "correct": true
+  },
+  {
+    "word": "打架斗欧",
+    "correct": false,
+    "right": "打架斗殴"
+  },
+  {
+    "word": "不可思议",
+    "correct": true
+  },
+  {
+    "word": "不可思意",
+    "correct": false,
+    "right": "不可思议"
+  },
+  {
+    "word": "鬼鬼祟祟",
+    "correct": true
+  },
+  {
+    "word": "鬼鬼崇崇",
+    "correct": false,
+    "right": "鬼鬼祟祟"
+  },
+  {
+    "word": "抑扬钝挫",
+    "correct": false,
+    "right": "抑扬顿挫"
+  },
+  {
+    "word": "不知所措",
+    "correct": true
+  },
+  {
+    "word": "不知所错",
+    "correct": false,
+    "right": "不知所措"
+  },
+  {
+    "word": "改邪归正",
+    "correct": true
+  },
+  {
+    "word": "改斜归正",
+    "correct": false,
+    "right": "改邪归正"
+  },
+  {
+    "word": "错落有致",
+    "correct": true
+  },
+  {
+    "word": "错落有志",
+    "correct": false,
+    "right": "错落有致"
+  },
+  {
+    "word": "无精打采",
+    "correct": true
+  },
+  {
+    "word": "无精打彩",
+    "correct": false,
+    "right": "无精打采"
+  },
+  {
+    "word": "杳无消息",
+    "correct": true
+  },
+  {
+    "word": "沓无消息",
+    "correct": false,
+    "right": "杳无消息"
+  },
+  {
+    "word": "痛心疾首",
+    "correct": true
+  },
+  {
+    "word": "痛心疾手",
+    "correct": false,
+    "right": "痛心疾首"
+  },
+  {
+    "word": "出类拔萃",
+    "correct": true
+  },
+  {
+    "word": "出类拔翠",
+    "correct": false,
+    "right": "出类拔萃"
+  },
+  {
+    "word": "白璧微瑕",
+    "correct": true
+  },
+  {
+    "word": "白壁微瑕",
+    "correct": false,
+    "right": "白璧微瑕"
+  },
+  {
+    "word": "卑躬屈膝",
+    "correct": true
+  },
+  {
+    "word": "卑躬曲膝",
+    "correct": false,
+    "right": "卑躬屈膝"
+  },
+  {
+    "word": "互相推诿",
+    "correct": true
+  },
+  {
+    "word": "互相推委",
+    "correct": false,
+    "right": "互相推诿"
+  },
+  {
+    "word": "关怀备至",
+    "correct": true
+  },
+  {
+    "word": "关怀倍至",
+    "correct": false,
+    "right": "关怀备至"
+  },
+  {
+    "word": "如法炮制",
+    "correct": true
+  },
+  {
+    "word": "如法泡制",
+    "correct": false,
+    "right": "如法炮制"
+  },
+  {
+    "word": "英雄辈出",
+    "correct": true
+  },
+  {
+    "word": "英雄倍出",
+    "correct": false,
+    "right": "英雄辈出"
+  },
+  {
+    "word": "嘉宾满堂",
+    "correct": true
+  },
+  {
+    "word": "佳宾满堂",
+    "correct": false,
+    "right": "嘉宾满堂"
+  },
+  {
+    "word": "乔装打扮",
+    "correct": true
+  },
+  {
+    "word": "巧装打扮",
+    "correct": false,
+    "right": "乔装打扮"
+  },
+  {
+    "word": "一张一弛",
+    "correct": true
+  },
+  {
+    "word": "一张一驰",
+    "correct": false,
+    "right": "一张一弛"
+  },
+  {
+    "word": "病入膏肓",
+    "correct": true
+  },
+  {
+    "word": "病入膏盲",
+    "correct": false,
+    "right": "病入膏肓"
+  },
+  {
+    "word": "好高骛远",
+    "correct": true
+  },
+  {
+    "word": "好高鹜远",
+    "correct": false,
+    "right": "好高骛远"
+  },
+  {
+    "word": "破釜沉舟",
+    "correct": true
+  },
+  {
+    "word": "破斧沉舟",
+    "correct": false,
+    "right": "破釜沉舟"
+  },
+  {
+    "word": "迫不及待",
+    "correct": true
+  },
+  {
+    "word": "迫不急待",
+    "correct": false,
+    "right": "迫不及待"
+  },
+  {
+    "word": "陈词滥调",
+    "correct": true
+  },
+  {
+    "word": "陈词烂调",
+    "correct": false,
+    "right": "陈词滥调"
+  },
+  {
+    "word": "称心如意",
+    "correct": true
+  },
+  {
+    "word": "趁心如意",
+    "correct": false,
+    "right": "称心如意"
+  },
+  {
+    "word": "语无伦次",
+    "correct": true
+  },
+  {
+    "word": "语无论次",
+    "correct": false,
+    "right": "语无伦次"
+  },
+  {
+    "word": "相形见绌",
+    "correct": true
+  },
+  {
+    "word": "相形见拙",
+    "correct": false,
+    "right": "相形见绌"
+  },
+  {
+    "word": "直截了当",
+    "correct": true
+  },
+  {
+    "word": "直接了当",
+    "correct": false,
+    "right": "直截了当"
+  },
+  {
+    "word": "毛骨悚然",
+    "correct": true
+  },
+  {
+    "word": "毛骨耸然",
+    "correct": false,
+    "right": "毛骨悚然"
+  },
+  {
+    "word": "名列前茅",
+    "correct": true
+  },
+  {
+    "word": "手屈一指",
+    "correct": false,
+    "right": "首屈一指"
+  },
+  {
+    "word": "首屈一指",
+    "correct": true
+  },
+  {
+    "word": "丰功伟绩",
+    "correct": true
+  },
+  {
+    "word": "丰功伟迹",
+    "correct": false,
+    "right": "丰功伟绩"
+  },
+  {
+    "word": "惨无人道",
+    "correct": true
+  },
+  {
+    "word": "残无人道",
+    "correct": false,
+    "right": "惨无人道"
+  },
+  {
+    "word": "铤而走险",
+    "correct": true
+  },
+  {
+    "word": "挺而走险",
+    "correct": false,
+    "right": "铤而走险"
+  },
+  {
+    "word": "徇私舞弊",
+    "correct": true
+  },
+  {
+    "word": "殉私舞弊",
+    "correct": false,
+    "right": "徇私舞弊"
+  },
+  {
+    "word": "声色俱厉",
+    "correct": true
+  },
+  {
+    "word": "声色俱历",
+    "correct": false,
+    "right": "声色俱厉"
+  },
+  {
+    "word": "天翻地覆",
+    "correct": true
+  },
+  {
+    "word": "天翻地复",
+    "correct": false,
+    "right": "天翻地覆"
+  },
+  {
+    "word": "汗流浃背",
+    "correct": true
+  },
+  {
+    "word": "汗流夹背",
+    "correct": false,
+    "right": "汗流浃背"
+  },
+  {
+    "word": "声名狼藉",
+    "correct": true
+  },
+  {
+    "word": "声名狼籍",
+    "correct": false,
+    "right": "声名狼藉"
+  },
+  {
+    "word": "川流不息",
+    "correct": true
+  },
+  {
+    "word": "穿流不息",
+    "correct": false,
+    "right": "川流不息"
+  },
+  {
+    "word": "一筹莫展",
+    "correct": true
+  },
+  {
+    "word": "一愁莫展",
+    "correct": false,
+    "right": "一筹莫展"
+  },
+  {
+    "word": "异口同声",
+    "correct": true
+  },
+  {
+    "word": "一口同声",
+    "correct": false,
+    "right": "异口同声"
+  },
+  {
+    "word": "因地制宜",
+    "correct": true
+  },
+  {
+    "word": "记忆犹新",
+    "correct": true
+  },
+  {
+    "word": "记忆尤新",
+    "correct": false,
+    "right": "记忆犹新"
+  },
+  {
+    "word": "貌合神离",
+    "correct": true
+  },
+  {
+    "word": "貌和神离",
+    "correct": false,
+    "right": "貌合神离"
+  },
+  {
+    "word": "珠联璧合",
+    "correct": true
+  },
+  {
+    "word": "珠连壁合",
+    "correct": false,
+    "right": "珠联璧合"
+  },
+  {
+    "word": "原驰蜡象",
+    "correct": true
+  },
+  {
+    "word": "原驰腊象",
+    "correct": false,
+    "right": "原驰蜡象"
+  },
+  {
+    "word": "挑拨离间",
+    "correct": true
+  },
+  {
+    "word": "挑拔离间",
+    "correct": false,
+    "right": "挑拨离间"
+  },
+  {
+    "word": "雍容典雅",
+    "correct": true
+  },
+  {
+    "word": "雍荣典雅",
+    "correct": false,
+    "right": "雍容典雅"
+  },
+  {
+    "word": "原形毕露",
+    "correct": true
+  },
+  {
+    "word": "原形必露",
+    "correct": false,
+    "right": "原形毕露"
+  },
+  {
+    "word": "如火如荼",
+    "correct": true
+  },
+  {
+    "word": "如火如茶",
+    "correct": false,
+    "right": "如火如荼"
+  },
+  {
+    "word": "不屑置辩",
+    "correct": true
+  },
+  {
+    "word": "不屑置辨",
+    "correct": false,
+    "right": "不屑置辩"
+  },
+  {
+    "word": "披星戴月",
+    "correct": true
+  },
+  {
+    "word": "披星带月",
+    "correct": false,
+    "right": "披星戴月"
+  },
+  {
+    "word": "漠不关心",
+    "correct": true
+  },
+  {
+    "word": "莫不关心",
+    "correct": false,
+    "right": "漠不关心"
+  },
+  {
+    "word": "嗡 (wēng)",
+    "correct": true
+  },
+  {
+    "word": "朗润 (lǎng rùn)",
+    "correct": true
+  },
+  {
+    "word": "酝酿 (yùn niàng)",
+    "correct": true
+  },
+  {
+    "word": "抖擞 (dǒu sǒu)",
+    "correct": true
+  },
+  {
+    "word": "健壮 (jiàn zhuàng)",
+    "correct": true
+  },
+  {
+    "word": "呼朋引伴 (hū péng yǐn bàn)",
+    "correct": true
+  },
+  {
+    "word": "花枝招展 (huā zhī zhāo zhǎn)",
+    "correct": true
+  },
+  {
+    "word": "镶 (xiāng)",
+    "correct": true
+  },
+  {
+    "word": "单单 (dān dān)",
+    "correct": true
+  },
+  {
+    "word": "安适 (ān shì)",
+    "correct": true
+  },
+  {
+    "word": "着落 (zhuó luò)",
+    "correct": true
+  },
+  {
+    "word": "慈善 (cí shàn)",
+    "correct": true
+  },
+  {
+    "word": "肌肤 (jī fū)",
+    "correct": true
+  },
+  {
+    "word": "秀气 (xiù qì)",
+    "correct": true
+  },
+  {
+    "word": "宽敞 (kuān chǎng)",
+    "correct": true
+  },
+  {
+    "word": "贮蓄 (zhù xù)",
+    "correct": true
+  },
+  {
+    "word": "澄清 (chéng qīng)",
+    "correct": true
+  },
+  {
+    "word": "空灵 (kōng líng)",
+    "correct": true
+  },
+  {
+    "word": "地毯 (dì tǎn)",
+    "correct": true
+  },
+  {
+    "word": "蝉 (chán)",
+    "correct": true
+  },
+  {
+    "word": "花苞 (huā bāo)",
+    "correct": true
+  },
+  {
+    "word": "娇媚 (jiāo mèi)",
+    "correct": true
+  },
+  {
+    "word": "棱镜 (léng jìng)",
+    "correct": true
+  },
+  {
+    "word": "粗犷 (cū guǎng)",
+    "correct": true
+  },
+  {
+    "word": "睫毛 (jié máo)",
+    "correct": true
+  },
+  {
+    "word": "衣裳 (yī shang)",
+    "correct": true
+  },
+  {
+    "word": "铃铛 (líng dang)",
+    "correct": true
+  },
+  {
+    "word": "端庄 (duān zhuāng)",
+    "correct": true
+  },
+  {
+    "word": "静谧 (jìng mì)",
+    "correct": true
+  },
+  {
+    "word": "屋檐 (wū yán)",
+    "correct": true
+  },
+  {
+    "word": "凄冷 (qī lěng)",
+    "correct": true
+  },
+  {
+    "word": "化妆 (huà zhuāng)",
+    "correct": true
+  },
+  {
+    "word": "莅临 (lì lín)",
+    "correct": true
+  },
+  {
+    "word": "造访 (zào fǎng)",
+    "correct": true
+  },
+  {
+    "word": "干涩 (gān sè)",
+    "correct": true
+  },
+  {
+    "word": "草垛 (cǎo duò)",
+    "correct": true
+  },
+  {
+    "word": "绿茵茵 (lǜ yīn yīn)",
+    "correct": true
+  },
+  {
+    "word": "咄咄逼人 (duō duō bī rén)",
+    "correct": true
+  },
+  {
+    "word": "瘫痪 (tān huàn)",
+    "correct": true
+  },
+  {
+    "word": "暴怒 (bào nù)",
+    "correct": true
+  },
+  {
+    "word": "憔悴 (qiáo cuì)",
+    "correct": true
+  },
+  {
+    "word": "央求 (yāng qiú)",
+    "correct": true
+  },
+  {
+    "word": "絮叨 (xù dāo)",
+    "correct": true
+  },
+  {
+    "word": "诀别 (jué bié)",
+    "correct": true
+  },
+  {
+    "word": "淡雅 (dàn yǎ)",
+    "correct": true
+  },
+  {
+    "word": "高洁 (gāo jié)",
+    "correct": true
+  },
+  {
+    "word": "烂漫 (làn màn)",
+    "correct": true
+  },
+  {
+    "word": "翻来覆去 (fān lái fù qù)",
+    "correct": true
+  },
+  {
+    "word": "喜出望外 (xǐ chū wàng wài)",
+    "correct": true
+  },
+  {
+    "word": "信服 (xìn fú)",
+    "correct": true
+  },
+  {
+    "word": "分歧 (fēn qí)",
+    "correct": true
+  },
+  {
+    "word": "取决 (qǔ jué)",
+    "correct": true
+  },
+  {
+    "word": "一霎 (yī shà)",
+    "correct": true
+  },
+  {
+    "word": "两全 (liǎng quán)",
+    "correct": true
+  },
+  {
+    "word": "粼粼 (lín lín)",
+    "correct": true
+  },
+  {
+    "word": "各得其所 (gè dé qí suǒ)",
+    "correct": true
+  },
+  {
+    "word": "蒂 (dì)",
+    "correct": true
+  },
+  {
+    "word": "梗 (gěng)",
+    "correct": true
+  },
+  {
+    "word": "匿笑 (nì xiào)",
+    "correct": true
+  },
+  {
+    "word": "沐浴 (mù yù)",
+    "correct": true
+  },
+  {
+    "word": "祷告 (dǎo gào)",
+    "correct": true
+  },
+  {
+    "word": "姊妹 (zǐ mèi)",
+    "correct": true
+  },
+  {
+    "word": "亭亭 (tíng tíng)",
+    "correct": true
+  },
+  {
+    "word": "徘徊 (pái huái)",
+    "correct": true
+  },
+  {
+    "word": "遮蔽 (zhē bì)",
+    "correct": true
+  },
+  {
+    "word": "心绪 (xīn xù)",
+    "correct": true
+  },
+  {
+    "word": "流转 (liú zhuǎn)",
+    "correct": true
+  },
+  {
+    "word": "荫蔽 (yīn bì)",
+    "correct": true
+  },
+  {
+    "word": "抱头鼠窜 (cuàn)",
+    "correct": true
+  },
+  {
+    "word": "觅 (mì)",
+    "correct": true
+  },
+  {
+    "word": "跪 (guì)",
+    "correct": true
+  },
+  {
+    "word": "倘若 (tǎng ruò)",
+    "correct": true
+  },
+  {
+    "word": "鉴赏 (jiàn shǎng)",
+    "correct": true
+  },
+  {
+    "word": "啄食 (zhuó shí)",
+    "correct": true
+  },
+  {
+    "word": "和蔼 (hé ǎi)",
+    "correct": true
+  },
+  {
+    "word": "恭敬 (gōng jìng)",
+    "correct": true
+  },
+  {
+    "word": "质朴 (zhì pǔ)",
+    "correct": true
+  },
+  {
+    "word": "博学 (bó xué)",
+    "correct": true
+  },
+  {
+    "word": "渊博 (yuān bó)",
+    "correct": true
+  },
+  {
+    "word": "倜傥 (tì tǎng)",
+    "correct": true
+  },
+  {
+    "word": "淋漓 (lín lí)",
+    "correct": true
+  },
+  {
+    "word": "盔甲 (kuī jiǎ)",
+    "correct": true
+  },
+  {
+    "word": "绅士 (shēn shì)",
+    "correct": true
+  },
+  {
+    "word": "人迹罕至 (rén jì hǎn zhì)",
+    "correct": true
+  },
+  {
+    "word": "人声鼎沸 (rén shēng dǐng fèi)",
+    "correct": true
+  },
+  {
+    "word": "捡 (jiǎn)",
+    "correct": true
+  },
+  {
+    "word": "感慨 (gǎn kǎi)",
+    "correct": true
+  },
+  {
+    "word": "搓捻 (cuō niǎn)",
+    "correct": true
+  },
+  {
+    "word": "绽开 (zhàn kāi)",
+    "correct": true
+  },
+  {
+    "word": "争执 (zhēng zhí)",
+    "correct": true
+  },
+  {
+    "word": "惭愧 (cán kuì)",
+    "correct": true
+  },
+  {
+    "word": "悔恨 (huǐ hèn)",
+    "correct": true
+  },
+  {
+    "word": "激荡 (jī dàng)",
+    "correct": true
+  },
+  {
+    "word": "奥秘 (ào mì)",
+    "correct": true
+  },
+  {
+    "word": "拼凑 (pīn còu)",
+    "correct": true
+  },
+  {
+    "word": "企盼 (qǐ pàn)",
+    "correct": true
+  },
+  {
+    "word": "截然不同 (jié rán bù tóng)",
+    "correct": true
+  },
+  {
+    "word": "疲倦不堪 (pí juàn bù kān)",
+    "correct": true
+  },
+  {
+    "word": "小心翼翼 (xiǎo xīn yì yì)",
+    "correct": true
+  },
+  {
+    "word": "不求甚解 (bù qiú shèn jiě)",
+    "correct": true
+  },
+  {
+    "word": "混为一谈 (hùn wéi yī tán)",
+    "correct": true
+  },
+  {
+    "word": "恍然大悟 (huǎng rán dà wù)",
+    "correct": true
+  },
+  {
+    "word": "油然而生 (yóu rán ér shēng)",
+    "correct": true
+  },
+  {
+    "word": "花团锦簇 (huā tuán jǐn cù)",
+    "correct": true
+  },
+  {
+    "word": "美不胜收 (měi bù shèng shōu)",
+    "correct": true
+  },
+  {
+    "word": "冀 (jì)",
+    "correct": true
+  },
+  {
+    "word": "派遣 (pài qiǎn)",
+    "correct": true
+  },
+  {
+    "word": "殉职 (xùn zhí)",
+    "correct": true
+  },
+  {
+    "word": "动机 (dòng jī)",
+    "correct": true
+  },
+  {
+    "word": "狭隘 (xiá ài)",
+    "correct": true
+  },
+  {
+    "word": "极端 (jí duān)",
+    "correct": true
+  },
+  {
+    "word": "热忱 (rè chén)",
+    "correct": true
+  },
+  {
+    "word": "冷清 (lěng qīng)",
+    "correct": true
+  },
+  {
+    "word": "纯粹 (chún cuì)",
+    "correct": true
+  },
+  {
+    "word": "佩服 (pèi fú)",
+    "correct": true
+  },
+  {
+    "word": "高明 (gāo míng)",
+    "correct": true
+  },
+  {
+    "word": "鄙薄 (bǐ bó)",
+    "correct": true
+  },
+  {
+    "word": "拈轻怕重 (niān qīng pà zhòng)",
+    "correct": true
+  },
+  {
+    "word": "漠不关心 (mò bù guān xīn)",
+    "correct": true
+  },
+  {
+    "word": "麻木不仁 (má mù bù rén)",
+    "correct": true
+  },
+  {
+    "word": "精益求精 (jīng yì qiú jīng)",
+    "correct": true
+  },
+  {
+    "word": "见异思迁 (jiàn yì sī qiān)",
+    "correct": true
+  },
+  {
+    "word": "栋 (dòng)",
+    "correct": true
+  },
+  {
+    "word": "拣 (jiǎn)",
+    "correct": true
+  },
+  {
+    "word": "戳 (chuō)",
+    "correct": true
+  },
+  {
+    "word": "慷慨 (kāng kǎi)",
+    "correct": true
+  },
+  {
+    "word": "帐篷 (zhàng péng)",
+    "correct": true
+  },
+  {
+    "word": "废墟 (fèi xū)",
+    "correct": true
+  },
+  {
+    "word": "坍塌 (tān tā)",
+    "correct": true
+  },
+  {
+    "word": "呼啸 (hū xiào)",
+    "correct": true
+  },
+  {
+    "word": "滚烫 (gǔn tàng)",
+    "correct": true
+  },
+  {
+    "word": "张扬 (zhāng yáng)",
+    "correct": true
+  },
+  {
+    "word": "溜达 (liū dá)",
+    "correct": true
+  },
+  {
+    "word": "琢磨 (zuó mo)",
+    "correct": true
+  },
+  {
+    "word": "酬劳 (chóu láo)",
+    "correct": true
+  },
+  {
+    "word": "硬朗 (yìng lǎng)",
+    "correct": true
+  },
+  {
+    "word": "水渠 (shuǐ qú)",
+    "correct": true
+  },
+  {
+    "word": "流淌 (liú tǎng)",
+    "correct": true
+  },
+  {
+    "word": "光秃秃 (guāng tū tū)",
+    "correct": true
+  },
+  {
+    "word": "不毛之地 (bù máo zhī dì)",
+    "correct": true
+  },
+  {
+    "word": "刨根问底 (páo gēn wèn dǐ)",
+    "correct": true
+  },
+  {
+    "word": "沉默寡言 (chén mò guǎ yán)",
+    "correct": true
+  },
+  {
+    "word": "灼 (zhuó)",
+    "correct": true
+  },
+  {
+    "word": "趴 (pā)",
+    "correct": true
+  },
+  {
+    "word": "酷热 (kù rè)",
+    "correct": true
+  },
+  {
+    "word": "厌倦 (yàn juàn)",
+    "correct": true
+  },
+  {
+    "word": "附和 (fù hè)",
+    "correct": true
+  },
+  {
+    "word": "突兀 (tū wù)",
+    "correct": true
+  },
+  {
+    "word": "怦怦 (pēng pēng)",
+    "correct": true
+  },
+  {
+    "word": "哭泣 (kū qì)",
+    "correct": true
+  },
+  {
+    "word": "呻吟 (shēn yín)",
+    "correct": true
+  },
+  {
+    "word": "恍惚 (huǎng hū)",
+    "correct": true
+  },
+  {
+    "word": "暮色 (mù sè)",
+    "correct": true
+  },
+  {
+    "word": "安慰 (ān wèi)",
+    "correct": true
+  },
+  {
+    "word": "凌乱 (líng luàn)",
+    "correct": true
+  },
+  {
+    "word": "惊讶 (jīng yà)",
+    "correct": true
+  },
+  {
+    "word": "畏惧 (wèi jù)",
+    "correct": true
+  },
+  {
+    "word": "参差不齐 (cēn cī bù qí)",
+    "correct": true
+  },
+  {
+    "word": "哄堂大笑 (hōng táng dà xiào)",
+    "correct": true
+  },
+  {
+    "word": "惊慌失措 (jīng huāng shī cuò)",
+    "correct": true
+  },
+  {
+    "word": "缕 (lǚ)",
+    "correct": true
+  },
+  {
+    "word": "倚 (yǐ)",
+    "correct": true
+  },
+  {
+    "word": "妄 (wàng)",
+    "correct": true
+  },
+  {
+    "word": "消耗 (xiāo hào)",
+    "correct": true
+  },
+  {
+    "word": "忧郁 (yōu yù)",
+    "correct": true
+  },
+  {
+    "word": "懒惰 (lǎn duò)",
+    "correct": true
+  },
+  {
+    "word": "安详 (ān xiáng)",
+    "correct": true
+  },
+  {
+    "word": "乞丐 (qǐ gài)",
+    "correct": true
+  },
+  {
+    "word": "预警 (yù jǐng)",
+    "correct": true
+  },
+  {
+    "word": "怅然 (chàng rán)",
+    "correct": true
+  },
+  {
+    "word": "蜷伏 (quán fú)",
+    "correct": true
+  },
+  {
+    "word": "叮嘱 (dīng zhǔ)",
+    "correct": true
+  },
+  {
+    "word": "惩戒 (chéng jiè)",
+    "correct": true
+  },
+  {
+    "word": "悲楚 (bēi chǔ)",
+    "correct": true
+  },
+  {
+    "word": "断语 (duàn yǔ)",
+    "correct": true
+  },
+  {
+    "word": "冤枉 (yuān wang)",
+    "correct": true
+  },
+  {
+    "word": "虐待 (nüè dài)",
+    "correct": true
+  },
+  {
+    "word": "芙蓉鸟 (fú róng niǎo)",
+    "correct": true
+  },
+  {
+    "word": "畏罪潜逃 (wèi zuì qián táo)",
+    "correct": true
+  },
+  {
+    "word": "敛 (liǎn)",
+    "correct": true
+  },
+  {
+    "word": "哺乳 (bǔ rǔ)",
+    "correct": true
+  },
+  {
+    "word": "羞怯 (xiū qiè)",
+    "correct": true
+  },
+  {
+    "word": "写照 (xiě zhào)",
+    "correct": true
+  },
+  {
+    "word": "匍匐 (pú fú)",
+    "correct": true
+  },
+  {
+    "word": "原委 (yuán wěi)",
+    "correct": true
+  },
+  {
+    "word": "鹦鹉 (yīng wǔ)",
+    "correct": true
+  },
+  {
+    "word": "温驯 (wēn xùn)",
+    "correct": true
+  },
+  {
+    "word": "禁锢 (jìn gù)",
+    "correct": true
+  },
+  {
+    "word": "滑翔 (huá xiáng)",
+    "correct": true
+  },
+  {
+    "word": "余晖 (yú huī)",
+    "correct": true
+  },
+  {
+    "word": "俯冲 (fǔ chōng)",
+    "correct": true
+  },
+  {
+    "word": "柠檬 (níng méng)",
+    "correct": true
+  },
+  {
+    "word": "怪诞不经 (guài dàn bù jīng)",
+    "correct": true
+  },
+  {
+    "word": "大相径庭 (dà xiāng jìng tíng)",
+    "correct": true
+  },
+  {
+    "word": "神采奕奕 (shén cǎi yì yì)",
+    "correct": true
+  },
+  {
+    "word": "赐 (cì)",
+    "correct": true
+  },
+  {
+    "word": "聘 (pìn)",
+    "correct": true
+  },
+  {
+    "word": "炫耀 (xuàn yào)",
+    "correct": true
+  },
+  {
+    "word": "称职 (chèn zhí)",
+    "correct": true
+  },
+  {
+    "word": "愚蠢 (yú chǔn)",
+    "correct": true
+  },
+  {
+    "word": "现款 (xiàn kuǎn)",
+    "correct": true
+  },
+  {
+    "word": "妥当 (tuǒ dàng)",
+    "correct": true
+  },
+  {
+    "word": "理智 (lǐ zhì)",
+    "correct": true
+  },
+  {
+    "word": "呈报 (chéng bào)",
+    "correct": true
+  },
+  {
+    "word": "钦差 (qīn chāi)",
+    "correct": true
+  },
+  {
+    "word": "滑稽 (huá jī)",
+    "correct": true
+  },
+  {
+    "word": "圈定 (quān dìng)",
+    "correct": true
+  },
+  {
+    "word": "陛下 (bì xià)",
+    "correct": true
+  },
+  {
+    "word": "爵士 (jué shì)",
+    "correct": true
+  },
+  {
+    "word": "头衔 (tóu xián)",
+    "correct": true
+  },
+  {
+    "word": "勋章 (xūn zhāng)",
+    "correct": true
+  },
+  {
+    "word": "袍子 (páo zǐ)",
+    "correct": true
+  },
+  {
+    "word": "不可救药 (bù kě jiù yào)",
+    "correct": true
+  },
+  {
+    "word": "骇人听闻 (hài rén tīng wén)",
+    "correct": true
+  },
+  {
+    "word": "随声附和 (suí shēng fù hè)",
+    "correct": true
+  },
+  {
+    "word": "缥缈 (piāo miǎo)",
+    "correct": true
+  },
+  {
+    "word": "定然 (dìng rán)",
+    "correct": true
+  },
+  {
+    "word": "陈列 (chén liè)",
+    "correct": true
+  },
+  {
+    "word": "闲游 (xián yóu)",
+    "correct": true
+  },
+  {
+    "word": "荒凉 (huāng liáng)",
+    "correct": true
+  },
+  {
+    "word": "寂寞 (jì mò)",
+    "correct": true
+  },
+  {
+    "word": "莽莽 (mǎng mǎng)",
+    "correct": true
+  },
+  {
+    "word": "蓬勃 (péng bó)",
+    "correct": true
+  },
+  {
+    "word": "澄澈 (chéng chè)",
+    "correct": true
+  },
+  {
+    "word": "掺和 (chān huo)",
+    "correct": true
+  },
+  {
+    "word": "非凡 (fēi fán)",
+    "correct": true
+  },
+  {
+    "word": "气概 (qì gài)",
+    "correct": true
+  },
+  {
+    "word": "灵敏 (líng mǐn)",
+    "correct": true
+  },
+  {
+    "word": "泥潭 (ní tán)",
+    "correct": true
+  },
+  {
+    "word": "绵延 (mián yán)",
+    "correct": true
+  },
+  {
+    "word": "神通广大 (shén tōng guǎng dà)",
+    "correct": true
+  },
+  {
+    "word": "灵机一动 (líng jī yī dòng)",
+    "correct": true
+  },
+  {
+    "word": "雕像 (diāo xiàng)",
+    "correct": true
+  },
+  {
+    "word": "庇护 (bì hù)",
+    "correct": true
+  },
+  {
+    "word": "爱慕 (ài mù)",
+    "correct": true
+  },
+  {
+    "word": "虚荣 (xū róng)",
+    "correct": true
+  },
+  {
+    "word": "较量 (jiào liàng)",
+    "correct": true
+  },
+  {
+    "word": "凯歌 (kǎi gē)",
+    "correct": true
+  },
+  {
+    "word": "杞人忧天 (qǐ rén yōu tiān)",
+    "correct": true
+  },
+  {
+    "word": "人不知而不愠",
+    "correct": true
+  },
+  {
+    "word": "人不知而不温",
+    "correct": false,
+    "right": "人不知而不愠"
+  },
+  {
+    "word": "温故而知新",
+    "correct": true
+  },
+  {
+    "word": "温故而知心",
+    "correct": false,
+    "right": "温故而知新"
+  },
+  {
+    "word": "随君直到夜郎西",
+    "correct": true
+  },
+  {
+    "word": "随君直到夜朗西",
+    "correct": false,
+    "right": "随君直到夜郎西"
+  },
+  {
+    "word": "随君直到夜郎溪",
+    "correct": false,
+    "right": "随君直到夜郎西"
+  },
+  {
+    "word": "逝者如斯夫",
+    "correct": true
+  }
 ];
 
 function sampleWord(probWrong = 0.10, forceWrong = false) {
   const wrongs = WORD_BANK.filter(w => !w.correct);
   const rights = WORD_BANK.filter(w => w.correct);
-  // 如果强制错误，直接返回错误词
   if (forceWrong && wrongs.length > 0) {
     const w = wrongs[Math.floor(Math.random()*wrongs.length)]; 
     return { text:w.word, correct:false, right:w.right }; 
   }
-  // 否则按概率随机
   const useWrong = Math.random() < probWrong && wrongs.length > 0;
   if (useWrong) { 
     const w = wrongs[Math.floor(Math.random()*wrongs.length)]; 

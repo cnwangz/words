@@ -11,7 +11,7 @@
 <body>
 	<div class="container">
 		<header class="header">
-			<h1>🦜 <span class="fancy-title">大嘴鸟</span> · 字词学习版</h1>
+			<h1><img src="kright.png" alt="大嘴鸟" class="header-icon"> <span class="fancy-title">大嘴鸟</span> · 字词学习版</h1>
 		</header>
 
 		<section class="game-wrap">
@@ -27,6 +27,7 @@
 			
 			<!-- 右侧按钮（竖排，底部对齐到绿色地平线） -->
 			<div class="buttons-right">
+				<button id="zhixinBtn" class="btn zhixin hidden" title="知新">知新</button>
 				<button id="startBtn" class="btn primary">开始</button>
 				<button id="pauseBtn" class="btn" disabled>暂停</button>
 				<button id="resetBtn" class="btn">重置</button>
@@ -37,7 +38,7 @@
 			<div id="overlay" class="overlay">
 				<div class="panel">
 					<h2 id="overlayTitle">点击开始</h2>
-					<p id="overlayTip">点击字词，大嘴鸟飞去吞食：每级需正确15个；每9个正确词必出1个错误词；随等级外形解锁肚皮/冠羽/双翼/尾羽。</p>
+					<p id="overlayTip">点击字词，大嘴鸟飞去吞食：正确+1分，错误-1分；累计18分升1级，36分升2级，72分升3级（最高级）；3级解锁"知新"功能；每9个正确词必出1个错误词。</p>
 					<div class="panel-buttons">
 						<button class="btn primary" id="overlayStart">开始游戏</button>
 					</div>

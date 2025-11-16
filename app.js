@@ -68,21 +68,20 @@ function autoDetectLowPower() {
 // 等级：移动速度（像素/帧）、出词间隔(ms)、最大并发词数
 const LEVELS = [
 	{ name: '慢',   birdSpeed: 4,  spawnMs: 1400, maxItems: 3 },
-	{ name: '中',   birdSpeed: 5.5,spawnMs: 1200, maxItems: 4 },
-	{ name: '快',   birdSpeed: 7,  spawnMs: 1000, maxItems: 5 },
-	{ name: '很快', birdSpeed: 8.5,spawnMs: 850,  maxItems: 6 },
-	{ name: '极快', birdSpeed: 10, spawnMs: 750,  maxItems: 7 }
+	{ name: '稍快', birdSpeed: 5.5,spawnMs: 1200, maxItems: 4 },
+	{ name: '快',   birdSpeed: 7,  spawnMs: 1000, maxItems: 5 }
 ];
 
 const STATE = {
 	running: false,
 	paused: false,
 	score: 0,
-	level: 1,
+	level: 0, // 0级开始，最高3级
 	correct: 0,
 	wrong: 0,
 	probWrong: 0.10,
-	correctCounter: 0 // 用于追踪连续正确词数量
+	correctCounter: 0, // 用于追踪连续正确词数量
+	levelProgress: 0 // 当前级别的进度分数
 };
 
 // 啄木鸟（圆形+三角喙的简化造型）
@@ -105,7 +104,7 @@ let spawnTimer; let animationId;
 
 function resetGame() {
 	STATE.running = false; STATE.paused = false;
-	STATE.score = 0; STATE.level = 1; STATE.correct = 0; STATE.wrong = 0; STATE.correctCounter = 0;
+	STATE.score = 0; STATE.level = 0; STATE.correct = 0; STATE.wrong = 0; STATE.correctCounter = 0; STATE.levelProgress = 0;
 	items = [];
 	bird.x = 120; bird.y = canvas.height - 120; bird.size = 16; bird.target = null;
 	bird.idleMode = false; bird.idleTimer = 0; bird.nextIdleTarget = null; // 重置空闲状态
@@ -119,19 +118,44 @@ function resetGame() {
 	updateUI();
 	overlay.classList.remove('hidden');
 	overlayTitle.textContent = '点击开始';
-	overlayTip.textContent = '点击字词，大嘴鸟飞去吞食：正确变强、错误变弱（每9个正确词必出1个错误词）';
+	overlayTip.textContent = '点击字词，大嘴鸟飞去吞食：正确+1分，错误-1分；累计18分升1级，36分升2级，72分升3级（最高级）；3级解锁"知新"功能；每9个正确词必出1个错误词';
 	draw();
 }
 
 function updateUI() {
 	scoreEl.textContent = STATE.score;
 	levelEl.textContent = STATE.level;
-	speedEl.textContent = LEVELS[STATE.level - 1].name;
+	speedEl.textContent = STATE.level > 0 ? LEVELS[Math.min(STATE.level - 1, LEVELS.length - 1)].name : '慢';
 	correctEl.textContent = STATE.correct;
 	wrongEl.textContent = STATE.wrong;
-	const need = 15; const cur = STATE.correct % need;
-	progressEl && (progressEl.textContent = `${cur}/15`);
+	
+	// 根据级别显示不同的进度要求
+	let need, cur;
+	if (STATE.level === 0) {
+		need = 18;
+		cur = STATE.levelProgress;
+	} else if (STATE.level === 1) {
+		need = 36;
+		cur = STATE.levelProgress;
+	} else if (STATE.level === 2) {
+		need = 72;
+		cur = STATE.levelProgress;
+	} else {
+		need = 72;
+		cur = 72; // 3级已满
+	}
+	progressEl && (progressEl.textContent = `${cur}/${need}`);
 	wrongRateEl && (wrongRateEl.textContent = `${Math.round(STATE.probWrong*100)}%`);
+	
+	// 3级时显示"知新"按钮
+	const zhixinBtn = document.getElementById('zhixinBtn');
+	if (zhixinBtn) {
+		if (STATE.level >= 3) {
+			zhixinBtn.classList.remove('hidden');
+		} else {
+			zhixinBtn.classList.add('hidden');
+		}
+	}
 }
 
 // 背景装饰元素
@@ -835,27 +859,140 @@ function drawFloatingTexts() {
 	}
 }
 
+// 图片缓存对象
+const birdImages = {
+	right: null,
+	left: null,
+	rightLoaded: false,
+	leftLoaded: false
+};
+
+// 预加载大嘴鸟图片
+function preloadBirdImages() {
+	// 加载向右的图片
+	birdImages.right = new Image();
+	birdImages.right.onload = function() {
+		birdImages.rightLoaded = true;
+		console.log('kright.png 加载成功');
+	};
+	birdImages.right.onerror = function() {
+		console.warn('大嘴鸟图片加载失败：kright.png');
+		birdImages.rightLoaded = false;
+	};
+	birdImages.right.src = 'kright.png';
+	
+	// 加载向左的图片
+	birdImages.left = new Image();
+	birdImages.left.onload = function() {
+		birdImages.leftLoaded = true;
+		console.log('kleft.png 加载成功');
+	};
+	birdImages.left.onerror = function() {
+		console.warn('大嘴鸟图片加载失败：kleft.png');
+		birdImages.leftLoaded = false;
+	};
+	birdImages.left.src = 'kleft.png';
+}
+
+// 页面加载时预加载图片
+preloadBirdImages();
+
 function drawBird() {
 	ctx.save();
 	ctx.translate(bird.x, bird.y);
 
-	// 等级配色（更鲜艳的卡通色）
-	const lv = STATE.level;
-	const bodyColors = [
-		'#00bcd4', // 青色
-		'#03a9f4', // 蓝色
-		'#2196f3', // 深蓝
-		'#3f51b5', // 靛蓝
-		'#9c27b0'  // 紫色
-	];
-	const bodyColor = bodyColors[lv - 1] || bodyColors[0];
-	const bellyColor = '#fff9c4'; // 浅黄色肚皮
-	const beakColor = '#ff6f00'; // 橙色大嘴
-
-	// 朝向角度
+	// 计算朝向角度（朝向目标或移动方向）
 	let angle = 0;
-	if (bird.target) angle = Math.atan2(bird.target.y - bird.y, bird.target.x - bird.x);
-	ctx.rotate(angle);
+	if (bird.target) {
+		angle = Math.atan2(bird.target.y - bird.y, bird.target.x - bird.x);
+	} else if (bird.idleMode && bird.nextIdleTarget) {
+		angle = Math.atan2(bird.nextIdleTarget.y - bird.y, bird.nextIdleTarget.x - bird.x);
+	} else if (bird.vx !== 0 || bird.vy !== 0) {
+		angle = Math.atan2(bird.vy, bird.vx);
+	}
+	
+	// 判断水平移动方向（只看x方向）
+	// 向右移动（含右上、右下）：dx > 0 → 使用 kright.png
+	// 向左移动（含左上、左下）：dx < 0 → 使用 kleft.png
+	// 垂直移动（dx === 0）：根据角度判断（-90° 到 90° 之间表示向右）
+	let dx = 0;
+	if (bird.target) {
+		dx = bird.target.x - bird.x;
+	} else if (bird.idleMode && bird.nextIdleTarget) {
+		dx = bird.nextIdleTarget.x - bird.x;
+	} else if (bird.vx !== 0) {
+		dx = bird.vx;
+	}
+	
+	// 将角度转换为度数
+	const angleDeg = angle * 180 / Math.PI;
+	
+	// 根据移动方向选择对应的图片
+	// 关键：kright.png 是面向右侧的图片，kleft.png 是面向左侧的图片
+	// 当使用 kleft.png 时，图片已经面向左侧，所以需要调整旋转角度
+	let img, imageFile;
+	let drawAngle = angle; // 实际绘制的角度
+	
+	if (dx > 0) {
+		// 明确向右移动（含右上、右下）
+		imageFile = 'kright.png';
+		img = birdImages.right;
+		drawAngle = angle; // 正常旋转
+	} else if (dx < 0) {
+		// 明确向左移动（含左上、左下）
+		imageFile = 'kleft.png';
+		img = birdImages.left;
+		// kleft.png 已经面向左侧，需要调整角度
+		// 如果角度是 -152.9°（左下），图片本身已经面向左，所以需要调整
+		// 将角度转换为相对于左侧的角度
+		drawAngle = angle + Math.PI; // 旋转180度，因为图片已经面向左
+	} else {
+		// dx === 0，垂直移动，根据角度判断
+		// 角度在 -90° 到 90° 之间表示向右（右上、右下）
+		if (Math.abs(angleDeg) <= 90) {
+			imageFile = 'kright.png';
+			img = birdImages.right;
+			drawAngle = angle;
+		} else {
+			imageFile = 'kleft.png';
+			img = birdImages.left;
+			drawAngle = angle + Math.PI; // 旋转180度
+		}
+	}
+	
+	// 旋转到移动方向（使用调整后的角度）
+	ctx.rotate(drawAngle);
+	
+	// 绘制图片（如果已加载）
+	if (img) {
+		// 检查图片是否已加载完成（使用多种方式检查）
+		const isRightLoaded = imageFile === 'kright.png' && (birdImages.rightLoaded || (img.complete && img.naturalWidth > 0));
+		const isLeftLoaded = imageFile === 'kleft.png' && (birdImages.leftLoaded || (img.complete && img.naturalWidth > 0));
+		const isLoaded = isRightLoaded || isLeftLoaded;
+		
+		if (isLoaded) {
+			const size = bird.size * 3; // 图片大小根据bird.size缩放
+			ctx.drawImage(img, -size / 2, -size / 2, size, size);
+		} else {
+			// 图片未加载完成，显示占位符
+			ctx.fillStyle = '#888';
+			ctx.beginPath();
+			ctx.arc(0, 0, bird.size, 0, Math.PI * 2);
+			ctx.fill();
+			// 调试信息
+			console.warn(`${imageFile} 未加载完成，当前状态: rightLoaded=${birdImages.rightLoaded}, leftLoaded=${birdImages.leftLoaded}, complete=${img.complete}, naturalWidth=${img.naturalWidth}`);
+		}
+	} else {
+		// 图片对象不存在，显示占位符
+		ctx.fillStyle = '#888';
+		ctx.beginPath();
+		ctx.arc(0, 0, bird.size, 0, Math.PI * 2);
+		ctx.fill();
+		console.warn(`图片对象不存在: ${imageFile}, right=${birdImages.right}, left=${birdImages.left}`);
+	}
+	
+	ctx.restore();
+	return;
 
 	// 1. 尾羽（Lv3+，在身体后面绘制）
 	if (lv >= 3) {
@@ -1084,14 +1221,18 @@ function drawItems() {
 			drawCartoonPattern(ctx, it.x, it.y - 12, patternType, it.w * 0.6);
 		}
 		
-		// 文本（在图案下方，自适应字号，调大1/3）
+		// 文本（在图案下方，所有词条统一使用与两字词相同的大小）
 		ctx.fillStyle = '#222';
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'middle';
-		let fs = Math.round(16 * 4 / 3); // 调大1/3，约21px
+		
+		// 所有词条统一使用21px基础字号，无论几字词
+		// 最小字号也是21px，确保所有词条都保持相同大小
+		let fs = 21;
 		const maxW = it.w - 20;
 		ctx.font = `bold ${fs}px "Microsoft YaHei", SimHei, Arial`;
-		while (ctx.measureText(it.text).width > maxW && fs > 13) {
+		// 最小字号为21px，不再缩小
+		while (ctx.measureText(it.text).width > maxW && fs > 21) {
 			fs -= 1;
 			ctx.font = `bold ${fs}px "Microsoft YaHei", SimHei, Arial`;
 		}
@@ -1485,6 +1626,47 @@ function drawCartoonPattern(ctx, x, y, patternType, size) {
 			ctx.fill();
 			break;
 			
+		case 'worm':
+			// 大虫子身体（分段，弯曲）
+			ctx.fillStyle = '#8bc34a'; // 绿色
+			// 身体分段1
+			ctx.beginPath();
+			ctx.ellipse(-8 * scale, 0, 6 * scale, 4 * scale, 0.3, 0, Math.PI * 2);
+			ctx.fill();
+			// 身体分段2
+			ctx.beginPath();
+			ctx.ellipse(0, 2 * scale, 6 * scale, 4 * scale, -0.2, 0, Math.PI * 2);
+			ctx.fill();
+			// 身体分段3
+			ctx.beginPath();
+			ctx.ellipse(8 * scale, 0, 6 * scale, 4 * scale, 0.2, 0, Math.PI * 2);
+			ctx.fill();
+			// 虫子头部（稍大）
+			ctx.fillStyle = '#689f38'; // 深绿色
+			ctx.beginPath();
+			ctx.ellipse(-10 * scale, -1 * scale, 5 * scale, 5 * scale, 0.3, 0, Math.PI * 2);
+			ctx.fill();
+			// 虫子眼睛
+			ctx.fillStyle = '#212121';
+			ctx.beginPath();
+			ctx.arc(-11 * scale, -2 * scale, 1.5 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(-9 * scale, -2 * scale, 1.5 * scale, 0, Math.PI * 2);
+			ctx.fill();
+			// 虫子身体纹理（分段线）
+			ctx.strokeStyle = '#689f38';
+			ctx.lineWidth = 1.5;
+			ctx.beginPath();
+			ctx.moveTo(-2 * scale, 0);
+			ctx.lineTo(-2 * scale, 4 * scale);
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(6 * scale, 2 * scale);
+			ctx.lineTo(6 * scale, 6 * scale);
+			ctx.stroke();
+			break;
+			
 		// 鸟类
 		case 'bird':
 			// 小鸟身体
@@ -1729,7 +1911,9 @@ function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r
 
 function spawnItem() {
 	try {
-		const baseMax = LEVELS[STATE.level - 1].maxItems;
+		// 如果level为0，使用第1级（索引0）的值
+		const levelIndex = STATE.level > 0 ? STATE.level - 1 : 0;
+		const baseMax = LEVELS[levelIndex].maxItems;
 		const maxItems = lowPowerMode ? Math.max(2, Math.floor(baseMax * 0.7)) : baseMax;
 		if (items.length >= maxItems) return;
 		if (typeof sampleWord !== 'function') { showToast('词库未加载，请检查 words_*.js 引用', '#b91c1c'); return; }
@@ -1744,7 +1928,8 @@ function spawnItem() {
 		const w = sampleWord(STATE.probWrong, forceWrong);
 		const x = 80 + Math.random() * (canvas.width - 160);
 		const y = 80 + Math.random() * (canvas.height - 220);
-		const cardW = 140, cardH = 56;
+		// 增大卡片宽度，让四字词加拼音有足够空间显示
+		const cardW = 180, cardH = 56;
 		
 		// 随机形状类型（低配模式减少复杂形状）
 		const shapes = lowPowerMode
@@ -1763,9 +1948,9 @@ function spawnItem() {
 		];
 		const colorPair = colors[Math.floor(Math.random() * colors.length)];
 		
-		// 随机卡通图案类型
+		// 随机卡通图案类型（包含大虫子）
 		const patternTypes = ['apple', 'orange', 'strawberry', 'banana', 'grape', 
-		                      'butterfly', 'bee', 'ladybug', 'dragonfly', 
+		                      'butterfly', 'bee', 'ladybug', 'dragonfly', 'worm',
 		                      'bird', 'parrot', 'eagle', 'owl',
 		                      'cherry', 'watermelon', 'pineapple', 'peach'];
 		const patternType = patternTypes[Math.floor(Math.random() * patternTypes.length)];
@@ -1809,7 +1994,9 @@ function update() {
 		bird.idleMode = false;
 		bird.idleTimer = 0;
 		
-		const spd = LEVELS[STATE.level - 1].birdSpeed;
+		// 如果level为0，使用第1级（索引0）的值
+		const levelIndex = STATE.level > 0 ? STATE.level - 1 : 0;
+		const spd = LEVELS[levelIndex].birdSpeed;
 		const dx = bird.target.x - bird.x;
 		const dy = bird.target.y - bird.y;
 		const dist = Math.hypot(dx, dy);
@@ -1821,8 +2008,10 @@ function update() {
 				const itemX = it.x, itemY = it.y; // 记录词条位置
 				items.splice(idx, 1);
 				if (it.correct) {
-					STATE.score += 10; STATE.correct += 1;
+					STATE.score += 1; // 正确+1分
+					STATE.correct += 1;
 					STATE.correctCounter += 1; // 增加连续正确计数
+					STATE.levelProgress += 1; // 进度+1
 					bird.size = Math.min(bird.size + 1.5, 40);
 					// 正确时的粒子特效（绿色）
 					createParticles(bird.x, bird.y, '#16a34a', 15);
@@ -1831,7 +2020,9 @@ function update() {
 					showToast('✓ 正确！', '#16a34a');
 					maybeLevelUp();
 				} else {
-					STATE.score = Math.max(0, STATE.score - 5); STATE.wrong += 1;
+					STATE.score = Math.max(0, STATE.score - 1); // 错误-1分
+					STATE.wrong += 1;
+					STATE.levelProgress = Math.max(0, STATE.levelProgress - 1); // 进度-1，不能小于0
 					// 错误词不重置计数器，保持9:1的严格比例
 					bird.size = Math.max(bird.size - 1.5, 10);
 					// 错误时的粒子特效（红色）
@@ -2052,17 +2243,44 @@ function loop(ts) {
 
 function startLoops() {
 	clearInterval(spawnTimer);
-	const baseMs = LEVELS[STATE.level - 1].spawnMs;
+	// 如果level为0，使用第1级（索引0）的值
+	const levelIndex = STATE.level > 0 ? STATE.level - 1 : 0;
+	const baseMs = LEVELS[levelIndex].spawnMs;
 	const spawnMs = lowPowerMode ? Math.round(baseMs * 1.25) : baseMs;
 	spawnTimer = setInterval(spawnItem, spawnMs);
 	loop();
 }
 
 function maybeLevelUp() {
-	// 每吞食正确 15 个升一级，最高 5 级
-	if (STATE.correct > 0 && STATE.correct % 15 === 0 && STATE.level < LEVELS.length) {
-		STATE.level += 1;
+	// 新的升级系统：
+	// 0级→1级：累计18分
+	// 1级→2级：累计36分（重新计数）
+	// 2级→3级：累计72分（重新计数）
+	// 3级为最高级
+	
+	let shouldLevelUp = false;
+	let targetLevel = STATE.level;
+	
+	if (STATE.level === 0 && STATE.levelProgress >= 18) {
+		targetLevel = 1;
+		shouldLevelUp = true;
+		STATE.levelProgress = 0; // 重新计数
+	} else if (STATE.level === 1 && STATE.levelProgress >= 36) {
+		targetLevel = 2;
+		shouldLevelUp = true;
+		STATE.levelProgress = 0; // 重新计数
+	} else if (STATE.level === 2 && STATE.levelProgress >= 72) {
+		targetLevel = 3;
+		shouldLevelUp = true;
+		STATE.levelProgress = 72; // 保持72，表示已满
+	}
+	
+	if (shouldLevelUp && targetLevel > STATE.level) {
+		STATE.level = targetLevel;
 		showToast('升级到 Lv.' + STATE.level + ' · 更快更准！', '#2563eb');
+		if (STATE.level === 3) {
+			showToast('🎉 恭喜达到最高级！解锁"知新"功能！', '#ffd700');
+		}
 		startLoops();
 	}
 }
@@ -2154,7 +2372,7 @@ function resetGame() {
 	STATE.running = false; STATE.paused = false;
 	startBtn.disabled = false; pauseBtn.disabled = true; pauseBtn.textContent = '暂停';
 	bird.target = null; items = [];
-	STATE.score = 0; STATE.level = 1; STATE.correct = 0; STATE.wrong = 0; bird.size = 16; bird.x = 120; bird.y = canvas.height - 120;
+	STATE.score = 0; STATE.level = 0; STATE.correct = 0; STATE.wrong = 0; STATE.levelProgress = 0; bird.size = 16; bird.x = 120; bird.y = canvas.height - 120;
 	
 	// 停止背景音乐
 	if (bgMusic) {
@@ -2380,6 +2598,18 @@ pauseBtn.addEventListener('click', pauseGame);
 resetBtn.addEventListener('click', resetGame);
 overlayStart.addEventListener('click', startGame);
 musicBtn.addEventListener('click', toggleMusic);
+
+// 知新按钮（3级解锁）
+const zhixinBtn = document.getElementById('zhixinBtn');
+if (zhixinBtn) {
+	zhixinBtn.addEventListener('click', function() {
+		// 获取当前路径并跳转到 /jy/index.html
+		const currentPath = window.location.pathname;
+		const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+		window.location.href = basePath + '/jy/index.html';
+	});
+}
+
 window.addEventListener('keydown', handleKey);
 
 // ========== 导入/清除词库功能 ==========
