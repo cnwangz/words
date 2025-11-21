@@ -118,7 +118,7 @@ function resetGame() {
 	updateUI();
 	overlay.classList.remove('hidden');
 	overlayTitle.textContent = '点击开始';
-	overlayTip.textContent = '点击字词，大嘴鸟飞去吞食：正确+1分，错误-1分；累计18分升1级，36分升2级，72分升3级（最高级）；3级解锁"知新"功能；每9个正确词必出1个错误词';
+	overlayTip.textContent = '点击字词，大嘴鸟飞去吞食：正确+1分，错误-1分；累计18分升1级，36分升2级，72分升3级（最高级）；2级解锁"知新"功能；每9个正确词必出1个错误词';
 	draw();
 }
 
@@ -147,10 +147,10 @@ function updateUI() {
 	progressEl && (progressEl.textContent = `${cur}/${need}`);
 	wrongRateEl && (wrongRateEl.textContent = `${Math.round(STATE.probWrong*100)}%`);
 	
-	// 3级时显示"知新"按钮
+	// 2级时显示"知新"按钮
 	const zhixinBtn = document.getElementById('zhixinBtn');
 	if (zhixinBtn) {
-		if (STATE.level >= 3) {
+		if (STATE.level >= 2) {
 			zhixinBtn.classList.remove('hidden');
 		} else {
 			zhixinBtn.classList.add('hidden');
@@ -2278,8 +2278,10 @@ function maybeLevelUp() {
 	if (shouldLevelUp && targetLevel > STATE.level) {
 		STATE.level = targetLevel;
 		showToast('升级到 Lv.' + STATE.level + ' · 更快更准！', '#2563eb');
-		if (STATE.level === 3) {
-			showToast('🎉 恭喜达到最高级！解锁"知新"功能！', '#ffd700');
+		if (STATE.level === 2) {
+			showToast('🎉 恭喜达到 Lv.2！解锁"知新"功能！', '#ffd700');
+		} else if (STATE.level === 3) {
+			showToast('🎉 恭喜达到最高级！保持巅峰状态！', '#ffd700');
 		}
 		startLoops();
 	}
@@ -2603,10 +2605,10 @@ musicBtn.addEventListener('click', toggleMusic);
 const zhixinBtn = document.getElementById('zhixinBtn');
 if (zhixinBtn) {
 	zhixinBtn.addEventListener('click', function() {
-		// 获取当前路径并跳转到 /jy/index.html
+		// 获取当前路径并跳转到 /zx/
 		const currentPath = window.location.pathname;
 		const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
-		window.location.href = basePath + '/jy/index.html';
+		window.location.href = basePath + '/zx/';
 	});
 }
 
