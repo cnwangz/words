@@ -2663,7 +2663,8 @@ function getTargetDate() {
 function downloadPDF(fileName) {
 	const targetDate = getTargetDate();
 	const dateStr = formatDateToYYMMDD(targetDate);
-	const pdfFileUrl = `/zx/${dateStr}${fileName}`;
+	// 使用相对路径，因为 index.html 和 zx 目录在同一层级
+	const pdfFileUrl = `zx/${dateStr}${fileName}`;
 	
 	// 创建一个隐藏的 <a> 标签并触发点击以下载
 	const downloadLink = document.createElement('a');
