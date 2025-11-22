@@ -2613,9 +2613,9 @@ resetBtn.addEventListener('click', resetGame);
 overlayStart.addEventListener('click', startGame);
 musicBtn.addEventListener('click', toggleMusic);
 
-// 日期格式化函数：将日期格式化为 yymmdd
+// 日期格式化函数：将日期格式化为 yyyymmdd
 function formatDateToYYMMDD(date) {
-	const year = date.getFullYear().toString().slice(-2); // 获取后两位年份
+	const year = date.getFullYear().toString(); // 获取完整年份
 	const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 月份补零
 	const day = date.getDate().toString().padStart(2, '0'); // 日期补零
 	return year + month + day;
