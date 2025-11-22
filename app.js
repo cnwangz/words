@@ -118,7 +118,7 @@ function resetGame() {
 	updateUI();
 	overlay.classList.remove('hidden');
 	overlayTitle.textContent = '点击开始';
-	overlayTip.textContent = '点击字词，大嘴鸟飞去吞食：正确+1分，错误-1分；累计18分升1级，36分升2级，72分升3级（最高级）；2级解锁"知新"功能；每9个正确词必出1个错误词';
+		overlayTip.textContent = '点击字词，大嘴鸟飞去吞食：正确+1分，错误-1分；累计18分升1级，36分升2级，72分升3级（最高级）；1级解锁"知新"功能，2级解锁"探究"功能；每9个正确词必出1个错误词';
 	draw();
 }
 
@@ -147,13 +147,23 @@ function updateUI() {
 	progressEl && (progressEl.textContent = `${cur}/${need}`);
 	wrongRateEl && (wrongRateEl.textContent = `${Math.round(STATE.probWrong*100)}%`);
 	
-	// 2级时显示"知新"按钮
+	// 1级时显示"知新"按钮，2级时显示"知新"和"探究"按钮
 	const zhixinBtn = document.getElementById('zhixinBtn');
+	const tanjiuBtn = document.getElementById('tanjiuBtn');
+	
 	if (zhixinBtn) {
-		if (STATE.level >= 2) {
+		if (STATE.level >= 1) {
 			zhixinBtn.classList.remove('hidden');
 		} else {
 			zhixinBtn.classList.add('hidden');
+		}
+	}
+	
+	if (tanjiuBtn) {
+		if (STATE.level >= 2) {
+			tanjiuBtn.classList.remove('hidden');
+		} else {
+			tanjiuBtn.classList.add('hidden');
 		}
 	}
 }
@@ -2278,8 +2288,10 @@ function maybeLevelUp() {
 	if (shouldLevelUp && targetLevel > STATE.level) {
 		STATE.level = targetLevel;
 		showToast('升级到 Lv.' + STATE.level + ' · 更快更准！', '#2563eb');
-		if (STATE.level === 2) {
-			showToast('🎉 恭喜达到 Lv.2！解锁"知新"功能！', '#ffd700');
+		if (STATE.level === 1) {
+			showToast('🎉 恭喜达到 Lv.1！解锁"知新"功能！', '#ffd700');
+		} else if (STATE.level === 2) {
+			showToast('🎉 恭喜达到 Lv.2！解锁"探究"功能！', '#4facfe');
 		} else if (STATE.level === 3) {
 			showToast('🎉 恭喜达到最高级！保持巅峰状态！', '#ffd700');
 		}
@@ -2601,14 +2613,83 @@ resetBtn.addEventListener('click', resetGame);
 overlayStart.addEventListener('click', startGame);
 musicBtn.addEventListener('click', toggleMusic);
 
-// 知新按钮（3级解锁）
+// 日期格式化函数：将日期格式化为 yymmdd
+function formatDateToYYMMDD(date) {
+	const year = date.getFullYear().toString().slice(-2); // 获取后两位年份
+	const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 月份补零
+	const day = date.getDate().toString().padStart(2, '0'); // 日期补零
+	return year + month + day;
+}
+
+// 获取目标日期：如果当前星期为五、六、日、一，取周五的日期；否则取周二的日期
+function getTargetDate() {
+	const today = new Date();
+	const currentDay = today.getDay(); // 0=周日, 1=周一, 2=周二, 3=周三, 4=周四, 5=周五, 6=周六
+	const targetDate = new Date(today);
+	
+	// 如果当前是周五(5)、周六(6)、周日(0)、周一(1)，取周五的日期
+	if (currentDay === 5 || currentDay === 6 || currentDay === 0 || currentDay === 1) {
+		// 计算到周五的天数差
+		// 如果今天是周五(5)，差0天；周六(6)差-1天；周日(0)差-2天；周一(1)差-3天（上周五）
+		let daysDiff;
+		if (currentDay === 5) {
+			daysDiff = 0; // 今天就是周五
+		} else if (currentDay === 6) {
+			daysDiff = -1; // 周六，往前1天到周五
+		} else if (currentDay === 0) {
+			daysDiff = -2; // 周日，往前2天到周五
+		} else { // currentDay === 1 (周一)
+			daysDiff = -3; // 周一，往前3天到上周五
+		}
+		targetDate.setDate(today.getDate() + daysDiff);
+	} else {
+		// 如果当前是周二(2)、周三(3)、周四(4)，取周二的日期
+		// 如果今天是周二(2)，差0天；周三(3)差-1天；周四(4)差-2天
+		let daysDiff;
+		if (currentDay === 2) {
+			daysDiff = 0; // 今天就是周二
+		} else if (currentDay === 3) {
+			daysDiff = -1; // 周三，往前1天到周二
+		} else { // currentDay === 4 (周四)
+			daysDiff = -2; // 周四，往前2天到周二
+		}
+		targetDate.setDate(today.getDate() + daysDiff);
+	}
+	
+	return targetDate;
+}
+
+// 下载PDF文件的通用函数
+function downloadPDF(fileName) {
+	const targetDate = getTargetDate();
+	const dateStr = formatDateToYYMMDD(targetDate);
+	const pdfFileUrl = `/zx/${dateStr}${fileName}`;
+	
+	// 创建一个隐藏的 <a> 标签并触发点击以下载
+	const downloadLink = document.createElement('a');
+	downloadLink.href = pdfFileUrl;
+	downloadLink.download = `${dateStr}${fileName}`; // 指定下载后的文件名
+	downloadLink.style.display = 'none'; // 隐藏这个链接元素
+	
+	// 将链接添加到页面中，模拟点击，然后移除
+	document.body.appendChild(downloadLink);
+	downloadLink.click();
+	document.body.removeChild(downloadLink);
+}
+
+// 知新按钮（1级解锁）
 const zhixinBtn = document.getElementById('zhixinBtn');
 if (zhixinBtn) {
 	zhixinBtn.addEventListener('click', function() {
-		// 获取当前路径并跳转到 /zx/
-		const currentPath = window.location.pathname;
-		const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
-		window.location.href = basePath + '/zx/';
+		downloadPDF('quiz.pdf');
+	});
+}
+
+// 探究按钮（2级解锁）
+const tanjiuBtn = document.getElementById('tanjiuBtn');
+if (tanjiuBtn) {
+	tanjiuBtn.addEventListener('click', function() {
+		downloadPDF('ans.pdf');
 	});
 }
 

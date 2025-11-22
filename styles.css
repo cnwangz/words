@@ -20,6 +20,8 @@ body{font-family:'Microsoft YaHei','SimHei',Arial,sans-serif;background:linear-g
 .btn.primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff}
 .btn.zhixin{background:linear-gradient(135deg,#ffd700 0%,#ffb700 100%);color:#333;font-weight:700}
 .btn.zhixin:hover{background:linear-gradient(135deg,#ffb700 0%,#ffd700 100%);box-shadow:0 4px 12px rgba(255,183,0,.4)}
+.btn.tanjiu{background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);color:#fff;font-weight:700}
+.btn.tanjiu:hover{background:linear-gradient(135deg,#00f2fe 0%,#4facfe 100%);box-shadow:0 4px 12px rgba(79,172,254,.4)}
 .btn.hidden{display:none}
 .game-wrap{position:relative;padding:16px;display:flex;justify-content:center;align-items:flex-start}
 #board{display:block;margin:0 auto;background:#e6f2ff;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.25);max-width:100%;height:auto;touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none}
