@@ -5,63 +5,6 @@
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
 
-// Canvas自适应函数
-function resizeCanvas() {
-	const container = document.querySelector('.game-wrap');
-	if (!container) return;
-	
-	const containerRect = container.getBoundingClientRect();
-	const availableWidth = containerRect.width || window.innerWidth;
-	const availableHeight = containerRect.height || window.innerHeight;
-	
-	// 保持16:10的宽高比，但不超过可用空间
-	const aspectRatio = 16 / 10;
-	let newWidth = availableWidth;
-	let newHeight = newWidth / aspectRatio;
-	
-	if (newHeight > availableHeight) {
-		newHeight = availableHeight;
-		newWidth = newHeight * aspectRatio;
-	}
-	
-	// 确保最小尺寸
-	if (newWidth < 320) newWidth = 320;
-	if (newHeight < 200) newHeight = 200;
-	
-	canvas.width = Math.floor(newWidth);
-	canvas.height = Math.floor(newHeight);
-	
-	// 设置Canvas显示尺寸为100%，让CSS控制实际显示大小
-	canvas.style.width = '100%';
-	canvas.style.height = '100%';
-}
-
-// 监听窗口大小变化和方向变化
-let resizeTimer;
-function handleResize() {
-	clearTimeout(resizeTimer);
-	resizeTimer = setTimeout(() => {
-		resizeCanvas();
-		if (!STATE.running) {
-			draw();
-		}
-	}, 100);
-}
-
-window.addEventListener('resize', handleResize);
-window.addEventListener('orientationchange', () => {
-	// 方向变化时延迟调整，等待浏览器完成布局
-	setTimeout(() => {
-		resizeCanvas();
-		if (!STATE.running) {
-			draw();
-		}
-	}, 300);
-});
-
-// 初始调整
-resizeCanvas();
-
 // UI
 const scoreEl = document.getElementById('score');
 const levelEl = document.getElementById('level');
@@ -163,10 +106,6 @@ function resetGame() {
 	STATE.running = false; STATE.paused = false;
 	STATE.score = 0; STATE.level = 0; STATE.correct = 0; STATE.wrong = 0; STATE.correctCounter = 0; STATE.levelProgress = 0;
 	items = [];
-	
-	// 确保Canvas尺寸正确
-	resizeCanvas();
-	
 	bird.x = 120; bird.y = canvas.height - 120; bird.size = 16; bird.target = null;
 	bird.idleMode = false; bird.idleTimer = 0; bird.nextIdleTarget = null; // 重置空闲状态
 	
@@ -2433,10 +2372,6 @@ function resetGame() {
 	STATE.running = false; STATE.paused = false;
 	startBtn.disabled = false; pauseBtn.disabled = true; pauseBtn.textContent = '暂停';
 	bird.target = null; items = [];
-	
-	// 确保Canvas尺寸正确
-	resizeCanvas();
-	
 	STATE.score = 0; STATE.level = 0; STATE.correct = 0; STATE.wrong = 0; STATE.levelProgress = 0; bird.size = 16; bird.x = 120; bird.y = canvas.height - 120;
 	
 	// 停止背景音乐
@@ -2921,193 +2856,6 @@ if (hasCustomWordBank) {
 
 // 更新状态显示
 updateWordBankStatus();
-
-// ========== 启动螺旋动画 ==========
-const splashScreen = document.getElementById('splashScreen');
-const spiralCanvas = document.getElementById('spiralCanvas');
-let spiralCtx = null;
-let spiralAnimationId = null;
-let spiralTime = 0;
-let animationComplete = false;
-
-// 初始化螺旋Canvas
-function initSpiralCanvas() {
-	if (!spiralCanvas) return;
-	
-	// 设置Canvas尺寸（使用设备像素比以获得清晰显示）
-	const dpr = window.devicePixelRatio || 1;
-	spiralCanvas.width = window.innerWidth * dpr;
-	spiralCanvas.height = window.innerHeight * dpr;
-	spiralCanvas.style.width = window.innerWidth + 'px';
-	spiralCanvas.style.height = window.innerHeight + 'px';
-	spiralCtx = spiralCanvas.getContext('2d');
-	
-	// 缩放上下文以匹配设备像素比
-	spiralCtx.scale(dpr, dpr);
-	
-	// 监听窗口大小变化
-	let resizeTimer;
-	window.addEventListener('resize', () => {
-		clearTimeout(resizeTimer);
-		resizeTimer = setTimeout(() => {
-			const dpr = window.devicePixelRatio || 1;
-			spiralCanvas.width = window.innerWidth * dpr;
-			spiralCanvas.height = window.innerHeight * dpr;
-			spiralCanvas.style.width = window.innerWidth + 'px';
-			spiralCanvas.style.height = window.innerHeight + 'px';
-			spiralCtx = spiralCanvas.getContext('2d');
-			spiralCtx.scale(dpr, dpr);
-		}, 100);
-	});
-}
-
-// 绘制螺旋动画
-function drawSpiral() {
-	if (!spiralCtx || !spiralCanvas) return;
-	
-	// 使用显示尺寸而不是Canvas实际尺寸（因为已缩放）
-	const width = window.innerWidth;
-	const height = window.innerHeight;
-	const centerX = width / 2;
-	const centerY = height / 2;
-	
-	// 清空画布
-	spiralCtx.clearRect(0, 0, width, height);
-	
-	// 设置绘制样式
-	const maxRadius = Math.min(width, height) * 0.4;
-	const numSpirals = 3; // 螺旋数量
-	const lineWidth = 3;
-	
-	spiralTime += 0.02; // 控制动画速度
-	
-	// 绘制多个螺旋
-	for (let s = 0; s < numSpirals; s++) {
-		const spiralOffset = (s / numSpirals) * Math.PI * 2;
-		const hue = (spiralTime * 20 + s * 120) % 360;
-		
-		spiralCtx.strokeStyle = `hsl(${hue}, 70%, 60%)`;
-		spiralCtx.lineWidth = lineWidth;
-		spiralCtx.lineCap = 'round';
-		spiralCtx.shadowBlur = 15;
-		spiralCtx.shadowColor = `hsl(${hue}, 70%, 60%)`;
-		
-		spiralCtx.beginPath();
-		
-		// 绘制螺旋线
-		const points = 200;
-		for (let i = 0; i <= points; i++) {
-			const t = i / points;
-			const angle = t * Math.PI * 8 + spiralTime + spiralOffset; // 8圈螺旋
-			const radius = t * maxRadius;
-			
-			const x = centerX + Math.cos(angle) * radius;
-			const y = centerY + Math.sin(angle) * radius;
-			
-			if (i === 0) {
-				spiralCtx.moveTo(x, y);
-			} else {
-				spiralCtx.lineTo(x, y);
-			}
-		}
-		
-		spiralCtx.stroke();
-	}
-	
-	// 绘制中心光点
-	const centerHue = (spiralTime * 30) % 360;
-	spiralCtx.fillStyle = `hsl(${centerHue}, 80%, 70%)`;
-	spiralCtx.shadowBlur = 30;
-	spiralCtx.shadowColor = `hsl(${centerHue}, 80%, 70%)`;
-	spiralCtx.beginPath();
-	spiralCtx.arc(centerX, centerY, 8, 0, Math.PI * 2);
-	spiralCtx.fill();
-	
-	// 绘制外圈粒子
-	for (let i = 0; i < 20; i++) {
-		const angle = (i / 20) * Math.PI * 2 + spiralTime * 2;
-		const radius = maxRadius * 1.2;
-		const x = centerX + Math.cos(angle) * radius;
-		const y = centerY + Math.sin(angle) * radius;
-		
-		const particleHue = (spiralTime * 25 + i * 18) % 360;
-		spiralCtx.fillStyle = `hsla(${particleHue}, 70%, 60%, 0.6)`;
-		spiralCtx.shadowBlur = 10;
-		spiralCtx.shadowColor = `hsl(${particleHue}, 70%, 60%)`;
-		spiralCtx.beginPath();
-		spiralCtx.arc(x, y, 4, 0, Math.PI * 2);
-		spiralCtx.fill();
-	}
-}
-
-// 启动动画循环
-function startSpiralAnimation() {
-	if (!spiralCtx) return;
-	
-	function animate() {
-		if (animationComplete) return;
-		
-		drawSpiral();
-		spiralAnimationId = requestAnimationFrame(animate);
-	}
-	
-	animate();
-}
-
-// 结束启动动画
-function endSplashScreen() {
-	if (animationComplete) return;
-	animationComplete = true;
-	
-	// 停止动画循环
-	if (spiralAnimationId) {
-		cancelAnimationFrame(spiralAnimationId);
-	}
-	
-	// 淡出效果
-	if (splashScreen) {
-		splashScreen.classList.add('fade-out');
-		
-		// 动画结束后移除元素并重新调整Canvas
-		setTimeout(() => {
-			if (splashScreen) {
-				splashScreen.style.display = 'none';
-			}
-			// 确保Canvas尺寸正确
-			resizeCanvas();
-			if (!STATE.running) {
-				draw();
-			}
-		}, 800);
-	}
-}
-
-// 初始化启动动画
-function initSplashScreen() {
-	initSpiralCanvas();
-	startSpiralAnimation();
-	
-	// 3秒后自动结束（或可以点击跳过）
-	const autoEndTimer = setTimeout(() => {
-		endSplashScreen();
-	}, 3000);
-	
-	// 点击跳过
-	if (splashScreen) {
-		splashScreen.addEventListener('click', () => {
-			clearTimeout(autoEndTimer);
-			endSplashScreen();
-		});
-	}
-}
-
-// 页面加载完成后启动动画
-if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', initSplashScreen);
-} else {
-	// DOM已经加载完成
-	initSplashScreen();
-}
 
 // 初始
 resetGame();
