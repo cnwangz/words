@@ -5,6 +5,63 @@
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
 
+// Canvas自适应函数
+function resizeCanvas() {
+	const container = document.querySelector('.game-wrap');
+	if (!container) return;
+	
+	const containerRect = container.getBoundingClientRect();
+	const availableWidth = containerRect.width || window.innerWidth;
+	const availableHeight = containerRect.height || window.innerHeight;
+	
+	// 保持16:10的宽高比，但不超过可用空间
+	const aspectRatio = 16 / 10;
+	let newWidth = availableWidth;
+	let newHeight = newWidth / aspectRatio;
+	
+	if (newHeight > availableHeight) {
+		newHeight = availableHeight;
+		newWidth = newHeight * aspectRatio;
+	}
+	
+	// 确保最小尺寸
+	if (newWidth < 320) newWidth = 320;
+	if (newHeight < 200) newHeight = 200;
+	
+	canvas.width = Math.floor(newWidth);
+	canvas.height = Math.floor(newHeight);
+	
+	// 设置Canvas显示尺寸为100%，让CSS控制实际显示大小
+	canvas.style.width = '100%';
+	canvas.style.height = '100%';
+}
+
+// 监听窗口大小变化和方向变化
+let resizeTimer;
+function handleResize() {
+	clearTimeout(resizeTimer);
+	resizeTimer = setTimeout(() => {
+		resizeCanvas();
+		if (!STATE.running) {
+			draw();
+		}
+	}, 100);
+}
+
+window.addEventListener('resize', handleResize);
+window.addEventListener('orientationchange', () => {
+	// 方向变化时延迟调整，等待浏览器完成布局
+	setTimeout(() => {
+		resizeCanvas();
+		if (!STATE.running) {
+			draw();
+		}
+	}, 300);
+});
+
+// 初始调整
+resizeCanvas();
+
 // UI
 const scoreEl = document.getElementById('score');
 const levelEl = document.getElementById('level');
@@ -106,6 +163,10 @@ function resetGame() {
 	STATE.running = false; STATE.paused = false;
 	STATE.score = 0; STATE.level = 0; STATE.correct = 0; STATE.wrong = 0; STATE.correctCounter = 0; STATE.levelProgress = 0;
 	items = [];
+	
+	// 确保Canvas尺寸正确
+	resizeCanvas();
+	
 	bird.x = 120; bird.y = canvas.height - 120; bird.size = 16; bird.target = null;
 	bird.idleMode = false; bird.idleTimer = 0; bird.nextIdleTarget = null; // 重置空闲状态
 	
@@ -118,7 +179,7 @@ function resetGame() {
 	updateUI();
 	overlay.classList.remove('hidden');
 	overlayTitle.textContent = '点击开始';
-		overlayTip.textContent = '点击字词，大嘴鸟飞去吞食：正确+1分，错误-1分；累计18分升1级，36分升2级，72分升3级（最高级）；1级解锁"知新"功能，2级解锁"探究"功能；每9个正确词必出1个错误词';
+	overlayTip.textContent = '点击字词，大嘴鸟飞去吞食：正确+1分，错误-1分；累计18分升1级，36分升2级，72分升3级（最高级）；3级解锁"知新"功能；每9个正确词必出1个错误词';
 	draw();
 }
 
@@ -147,23 +208,13 @@ function updateUI() {
 	progressEl && (progressEl.textContent = `${cur}/${need}`);
 	wrongRateEl && (wrongRateEl.textContent = `${Math.round(STATE.probWrong*100)}%`);
 	
-	// 1级时显示"知新"按钮，2级时显示"知新"和"探究"按钮
+	// 3级时显示"知新"按钮
 	const zhixinBtn = document.getElementById('zhixinBtn');
-	const tanjiuBtn = document.getElementById('tanjiuBtn');
-	
 	if (zhixinBtn) {
-		if (STATE.level >= 1) {
+		if (STATE.level >= 3) {
 			zhixinBtn.classList.remove('hidden');
 		} else {
 			zhixinBtn.classList.add('hidden');
-		}
-	}
-	
-	if (tanjiuBtn) {
-		if (STATE.level >= 2) {
-			tanjiuBtn.classList.remove('hidden');
-		} else {
-			tanjiuBtn.classList.add('hidden');
 		}
 	}
 }
@@ -2288,12 +2339,8 @@ function maybeLevelUp() {
 	if (shouldLevelUp && targetLevel > STATE.level) {
 		STATE.level = targetLevel;
 		showToast('升级到 Lv.' + STATE.level + ' · 更快更准！', '#2563eb');
-		if (STATE.level === 1) {
-			showToast('🎉 恭喜达到 Lv.1！解锁"知新"功能！', '#ffd700');
-		} else if (STATE.level === 2) {
-			showToast('🎉 恭喜达到 Lv.2！解锁"探究"功能！', '#4facfe');
-		} else if (STATE.level === 3) {
-			showToast('🎉 恭喜达到最高级！保持巅峰状态！', '#ffd700');
+		if (STATE.level === 3) {
+			showToast('🎉 恭喜达到最高级！解锁"知新"功能！', '#ffd700');
 		}
 		startLoops();
 	}
@@ -2386,6 +2433,10 @@ function resetGame() {
 	STATE.running = false; STATE.paused = false;
 	startBtn.disabled = false; pauseBtn.disabled = true; pauseBtn.textContent = '暂停';
 	bird.target = null; items = [];
+	
+	// 确保Canvas尺寸正确
+	resizeCanvas();
+	
 	STATE.score = 0; STATE.level = 0; STATE.correct = 0; STATE.wrong = 0; STATE.levelProgress = 0; bird.size = 16; bird.x = 120; bird.y = canvas.height - 120;
 	
 	// 停止背景音乐
@@ -2613,84 +2664,14 @@ resetBtn.addEventListener('click', resetGame);
 overlayStart.addEventListener('click', startGame);
 musicBtn.addEventListener('click', toggleMusic);
 
-// 日期格式化函数：将日期格式化为 yyyymmdd
-function formatDateToYYMMDD(date) {
-	const year = date.getFullYear().toString(); // 获取完整年份
-	const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 月份补零
-	const day = date.getDate().toString().padStart(2, '0'); // 日期补零
-	return year + month + day;
-}
-
-// 获取目标日期：如果当前星期为五、六、日、一，取周五的日期；否则取周二的日期
-function getTargetDate() {
-	const today = new Date();
-	const currentDay = today.getDay(); // 0=周日, 1=周一, 2=周二, 3=周三, 4=周四, 5=周五, 6=周六
-	const targetDate = new Date(today);
-	
-	// 如果当前是周五(5)、周六(6)、周日(0)、周一(1)，取周五的日期
-	if (currentDay === 5 || currentDay === 6 || currentDay === 0 || currentDay === 1) {
-		// 计算到周五的天数差
-		// 如果今天是周五(5)，差0天；周六(6)差-1天；周日(0)差-2天；周一(1)差-3天（上周五）
-		let daysDiff;
-		if (currentDay === 5) {
-			daysDiff = 0; // 今天就是周五
-		} else if (currentDay === 6) {
-			daysDiff = -1; // 周六，往前1天到周五
-		} else if (currentDay === 0) {
-			daysDiff = -2; // 周日，往前2天到周五
-		} else { // currentDay === 1 (周一)
-			daysDiff = -3; // 周一，往前3天到上周五
-		}
-		targetDate.setDate(today.getDate() + daysDiff);
-	} else {
-		// 如果当前是周二(2)、周三(3)、周四(4)，取周二的日期
-		// 如果今天是周二(2)，差0天；周三(3)差-1天；周四(4)差-2天
-		let daysDiff;
-		if (currentDay === 2) {
-			daysDiff = 0; // 今天就是周二
-		} else if (currentDay === 3) {
-			daysDiff = -1; // 周三，往前1天到周二
-		} else { // currentDay === 4 (周四)
-			daysDiff = -2; // 周四，往前2天到周二
-		}
-		targetDate.setDate(today.getDate() + daysDiff);
-	}
-	
-	return targetDate;
-}
-
-// 下载PDF文件的通用函数
-function downloadPDF(fileName) {
-	const targetDate = getTargetDate();
-	const dateStr = formatDateToYYMMDD(targetDate);
-	// 使用相对路径，因为 index.html 和 zx 目录在同一层级
-	const pdfFileUrl = `zx/${dateStr}${fileName}`;
-	
-	// 创建一个隐藏的 <a> 标签并触发点击以下载
-	const downloadLink = document.createElement('a');
-	downloadLink.href = pdfFileUrl;
-	downloadLink.download = `${dateStr}${fileName}`; // 指定下载后的文件名
-	downloadLink.style.display = 'none'; // 隐藏这个链接元素
-	
-	// 将链接添加到页面中，模拟点击，然后移除
-	document.body.appendChild(downloadLink);
-	downloadLink.click();
-	document.body.removeChild(downloadLink);
-}
-
-// 知新按钮（1级解锁）
+// 知新按钮（3级解锁）
 const zhixinBtn = document.getElementById('zhixinBtn');
 if (zhixinBtn) {
 	zhixinBtn.addEventListener('click', function() {
-		downloadPDF('quiz.pdf');
-	});
-}
-
-// 探究按钮（2级解锁）
-const tanjiuBtn = document.getElementById('tanjiuBtn');
-if (tanjiuBtn) {
-	tanjiuBtn.addEventListener('click', function() {
-		downloadPDF('ans.pdf');
+		// 获取当前路径并跳转到 /jy/index.html
+		const currentPath = window.location.pathname;
+		const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+		window.location.href = basePath + '/jy/index.html';
 	});
 }
 
@@ -2940,6 +2921,193 @@ if (hasCustomWordBank) {
 
 // 更新状态显示
 updateWordBankStatus();
+
+// ========== 启动螺旋动画 ==========
+const splashScreen = document.getElementById('splashScreen');
+const spiralCanvas = document.getElementById('spiralCanvas');
+let spiralCtx = null;
+let spiralAnimationId = null;
+let spiralTime = 0;
+let animationComplete = false;
+
+// 初始化螺旋Canvas
+function initSpiralCanvas() {
+	if (!spiralCanvas) return;
+	
+	// 设置Canvas尺寸（使用设备像素比以获得清晰显示）
+	const dpr = window.devicePixelRatio || 1;
+	spiralCanvas.width = window.innerWidth * dpr;
+	spiralCanvas.height = window.innerHeight * dpr;
+	spiralCanvas.style.width = window.innerWidth + 'px';
+	spiralCanvas.style.height = window.innerHeight + 'px';
+	spiralCtx = spiralCanvas.getContext('2d');
+	
+	// 缩放上下文以匹配设备像素比
+	spiralCtx.scale(dpr, dpr);
+	
+	// 监听窗口大小变化
+	let resizeTimer;
+	window.addEventListener('resize', () => {
+		clearTimeout(resizeTimer);
+		resizeTimer = setTimeout(() => {
+			const dpr = window.devicePixelRatio || 1;
+			spiralCanvas.width = window.innerWidth * dpr;
+			spiralCanvas.height = window.innerHeight * dpr;
+			spiralCanvas.style.width = window.innerWidth + 'px';
+			spiralCanvas.style.height = window.innerHeight + 'px';
+			spiralCtx = spiralCanvas.getContext('2d');
+			spiralCtx.scale(dpr, dpr);
+		}, 100);
+	});
+}
+
+// 绘制螺旋动画
+function drawSpiral() {
+	if (!spiralCtx || !spiralCanvas) return;
+	
+	// 使用显示尺寸而不是Canvas实际尺寸（因为已缩放）
+	const width = window.innerWidth;
+	const height = window.innerHeight;
+	const centerX = width / 2;
+	const centerY = height / 2;
+	
+	// 清空画布
+	spiralCtx.clearRect(0, 0, width, height);
+	
+	// 设置绘制样式
+	const maxRadius = Math.min(width, height) * 0.4;
+	const numSpirals = 3; // 螺旋数量
+	const lineWidth = 3;
+	
+	spiralTime += 0.02; // 控制动画速度
+	
+	// 绘制多个螺旋
+	for (let s = 0; s < numSpirals; s++) {
+		const spiralOffset = (s / numSpirals) * Math.PI * 2;
+		const hue = (spiralTime * 20 + s * 120) % 360;
+		
+		spiralCtx.strokeStyle = `hsl(${hue}, 70%, 60%)`;
+		spiralCtx.lineWidth = lineWidth;
+		spiralCtx.lineCap = 'round';
+		spiralCtx.shadowBlur = 15;
+		spiralCtx.shadowColor = `hsl(${hue}, 70%, 60%)`;
+		
+		spiralCtx.beginPath();
+		
+		// 绘制螺旋线
+		const points = 200;
+		for (let i = 0; i <= points; i++) {
+			const t = i / points;
+			const angle = t * Math.PI * 8 + spiralTime + spiralOffset; // 8圈螺旋
+			const radius = t * maxRadius;
+			
+			const x = centerX + Math.cos(angle) * radius;
+			const y = centerY + Math.sin(angle) * radius;
+			
+			if (i === 0) {
+				spiralCtx.moveTo(x, y);
+			} else {
+				spiralCtx.lineTo(x, y);
+			}
+		}
+		
+		spiralCtx.stroke();
+	}
+	
+	// 绘制中心光点
+	const centerHue = (spiralTime * 30) % 360;
+	spiralCtx.fillStyle = `hsl(${centerHue}, 80%, 70%)`;
+	spiralCtx.shadowBlur = 30;
+	spiralCtx.shadowColor = `hsl(${centerHue}, 80%, 70%)`;
+	spiralCtx.beginPath();
+	spiralCtx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+	spiralCtx.fill();
+	
+	// 绘制外圈粒子
+	for (let i = 0; i < 20; i++) {
+		const angle = (i / 20) * Math.PI * 2 + spiralTime * 2;
+		const radius = maxRadius * 1.2;
+		const x = centerX + Math.cos(angle) * radius;
+		const y = centerY + Math.sin(angle) * radius;
+		
+		const particleHue = (spiralTime * 25 + i * 18) % 360;
+		spiralCtx.fillStyle = `hsla(${particleHue}, 70%, 60%, 0.6)`;
+		spiralCtx.shadowBlur = 10;
+		spiralCtx.shadowColor = `hsl(${particleHue}, 70%, 60%)`;
+		spiralCtx.beginPath();
+		spiralCtx.arc(x, y, 4, 0, Math.PI * 2);
+		spiralCtx.fill();
+	}
+}
+
+// 启动动画循环
+function startSpiralAnimation() {
+	if (!spiralCtx) return;
+	
+	function animate() {
+		if (animationComplete) return;
+		
+		drawSpiral();
+		spiralAnimationId = requestAnimationFrame(animate);
+	}
+	
+	animate();
+}
+
+// 结束启动动画
+function endSplashScreen() {
+	if (animationComplete) return;
+	animationComplete = true;
+	
+	// 停止动画循环
+	if (spiralAnimationId) {
+		cancelAnimationFrame(spiralAnimationId);
+	}
+	
+	// 淡出效果
+	if (splashScreen) {
+		splashScreen.classList.add('fade-out');
+		
+		// 动画结束后移除元素并重新调整Canvas
+		setTimeout(() => {
+			if (splashScreen) {
+				splashScreen.style.display = 'none';
+			}
+			// 确保Canvas尺寸正确
+			resizeCanvas();
+			if (!STATE.running) {
+				draw();
+			}
+		}, 800);
+	}
+}
+
+// 初始化启动动画
+function initSplashScreen() {
+	initSpiralCanvas();
+	startSpiralAnimation();
+	
+	// 3秒后自动结束（或可以点击跳过）
+	const autoEndTimer = setTimeout(() => {
+		endSplashScreen();
+	}, 3000);
+	
+	// 点击跳过
+	if (splashScreen) {
+		splashScreen.addEventListener('click', () => {
+			clearTimeout(autoEndTimer);
+			endSplashScreen();
+		});
+	}
+}
+
+// 页面加载完成后启动动画
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initSplashScreen);
+} else {
+	// DOM已经加载完成
+	initSplashScreen();
+}
 
 // 初始
 resetGame();
