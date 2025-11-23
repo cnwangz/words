@@ -2,13 +2,23 @@
 <html lang="zh-CN">
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="screen-orientation" content="landscape">
 	<title>大嘴鸟 · 字词学习版</title>
 	<link rel="stylesheet" href="styles.css">
 </head>
 <body>
+	<!-- 启动动画容器 -->
+	<div id="splashScreen" class="splash-screen">
+		<canvas id="spiralCanvas"></canvas>
+		<div class="splash-content">
+			<h2 class="splash-title">大嘴鸟</h2>
+			<p class="splash-subtitle">字词学习版</p>
+		</div>
+	</div>
+
 	<div class="container">
 		<header class="header">
 			<h1><img src="kright.png" alt="大嘴鸟" class="header-icon"> <span class="fancy-title">大嘴鸟</span> · 字词学习版</h1>
